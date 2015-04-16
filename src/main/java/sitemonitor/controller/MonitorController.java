@@ -77,8 +77,9 @@ public class MonitorController {
 		}
 		
 		Site site = siteRepository.findOne(id);
-		Map<String,String> labels = new HashMap<String,String>();
+		Map<String,Object> labels = new HashMap<String,Object>();
 		labels.put("label", site.getName()); 
+		labels.put("showMarker", Boolean.FALSE); 
 		
 		List<Event> events = eventRepository.findBySite(site, new Sort(Sort.Direction.ASC, "eventTime"));
 		String[][][] data = new String[1][events.size()][2];
@@ -101,13 +102,14 @@ public class MonitorController {
 			logger.debug("MonitorController.chartData()");
 		}
 		List<Site> sites = Lists.newArrayList(siteRepository.findAll());
-		List<Map<String,String>> labels = new ArrayList<Map<String,String>>();
+		List<Map<String,Object>> labels = new ArrayList<Map<String,Object>>();
 		
 		String[][][] data = new String[sites.size()][][];
 		int s = 0;
 		for (Site site : sites) {
-			Map<String,String> label = new HashMap<String,String>();
+			Map<String,Object> label = new HashMap<String,Object>();
 			label.put("label", site.getName()); 
+			label.put("showMarker", Boolean.FALSE); 
 			labels.add(label);
 			
 			List<Event> events = eventRepository.findBySite(site, new Sort(Sort.Direction.ASC, "eventTime"));

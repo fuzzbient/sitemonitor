@@ -130,12 +130,17 @@ function graphAll() {
 }
 // http://www.jqplot.com/docs/files/plugins/jqplot-dateAxisRenderer-js.html
 // http://www.jqplot.com/deploy/dist/examples/
+var graph;
 function plotGraph(data, labels) {
-	$.jqplot('chartdiv', data, {
+	if (graph) { graph.destroy(); }
+	graph = $.jqplot('chartdiv', data, {
 		title:'Response Times',
 		seriesDefaults: {   	    
         	rendererOptions: { smooth: true}      
       	}, 
+      	seriesDefaults: {
+      		showMarker: false
+        },
 		series: labels,
 		legend: {
 	        show: true,
