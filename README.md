@@ -26,6 +26,13 @@ Example start command.
 ```bash
 nohup java -Xmx1024m -Dspring.mail.host=localhost -Dsitemonitor.mail.from=sitemonitor@foo.bar -jar $JARFile --server.port=8011 > /dev/null 2> ./sitemonitor.err & echo $! > sitemonitor.pid
 ```
+## Try these URLs and REST service endpoints to explore the features.
+
+* **Dashboard** http://localhost:8011/sitemonitor/stats
+* **HATEOAS Service Listing** http://localhost:8011/sitemonitor/
+* **Event Listing** http://localhost:8011/sitemonitor/service/events
+* **Event Changes** http://localhost:8011/sitemonitor/service/eventchanges
+* **Site Listing** http://localhost:8011/sitemonitor/service/sites
 
 ## Copyright and license
 
