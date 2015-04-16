@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head th:fragment="head" th:inline="text">
+	<title th:text="${title} ? ${title} : 'Site Monitor'">Site Monitor</title>
+	<meta charset="utf-8"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1" />
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" href="/css/styles.css" th:href="@{/css/styles.css}" />
+	<link rel="stylesheet" href="/css/styles.css" th:href="@{/css/jquery.jqplot.css}" />
+	<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/themes/sunny/jquery-ui.css" />
+	<!--[if lt IE 9]><script src="js/excanvas.min.js" th:src="@{/js/excanvas.min.js}"></script><![endif]-->
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+	<script src="js/jquery.columns.min.js" th:src="@{/js/jquery.columns.min.js}"></script>
+	<script src="js/jquery.jqplot.min.js" th:src="@{/js/jquery.jqplot.min.js}"></script>
+	<script src="js/jqplot.json2.min.js" th:src="@{/js/jqplot.json2.min.js}"></script>
+	<script src="js/jqplot.canvasAxisLabelRenderer.min.js" th:src="@{/js/jqplot.canvasAxisLabelRenderer.min.js}"></script>
+	<script src="js/jqplot.canvasTextRenderer.min.js" th:src="@{/js/jqplot.canvasTextRenderer.min.js}"></script>
+	<script src="js/jqplot.dateAxisRenderer.min.js" th:src="@{/js/jqplot.dateAxisRenderer.min.js}"></script>
+	<script src="js/jqplot.canvasAxisTickRenderer.min.js" th:src="@{/js/jqplot.canvasAxisTickRenderer.min.js}"></script>
+	<script src="js/jqplot.cursor.min.js" th:src="@{/js/jqplot.cursor.min.js}"></script>
+	<script type="text/javascript">
+	$(document).ready(function(){
+		$( ".button" ).button();
+		$( ".disabledbutton" ).button({ disabled: true });
+	});
+	</script>
+	<style type="text/css">
+	.columns .ui-table{border-collapse:collapse;width:100%;margin:1em 0;background-color:transparent;border:solid 1px #D5D5D5}.columns .ui-table thead{background-color:#E5E5E5}.columns .ui-table thead th{background-color:transparent;color:#222222;padding:10px;border-right:solid 1px #D5D5D5;cursor:pointer}.columns .ui-table thead th.ui-table-sort-up,.columns .ui-table thead th.ui-table-sort-down{background-color:#CCCCCC}.columns .ui-table thead th:last-child{border-right:0px}.columns .ui-table thead th .ui-arrow{float:right;font-size:10px}.columns .ui-table tbody{background-color:transparent}.columns .ui-table tbody tr.ui-table-rows-odd{background-color:#F2F2F2}.columns .ui-table tbody tr.ui-table-rows-even{background:#FFFFFF}.columns .ui-table tbody tr td{background:transparent;border-right:solid 1px #D5D5D5;color:#656565;padding:10px}.columns .ui-table-controls span{font-size:12px;padding:5px;vertical-align:middle}.columns .ui-table-controls span.ui-table-control-next,.columns .ui-table-controls span.ui-table-control-prev{cursor:pointer;font-family:"Arial Narrow";font-size:16px}.columns .ui-table-controls span.ui-table-control-disabled{color:#999999;font-family:"Arial Narrow";font-size:16px}.columns .ui-table-footer{width:100%;padding:8px 0;font-size:11px;text-align:left;color:#333}.columns .ui-table-footer span{vertical-align:middle}.columns .ui-table-footer .ui-table-show-rows,.columns .ui-table-footer .ui-table-results,.columns .ui-table-footer .ui-table-controls{display:inline-block;width:32%}.columns .ui-table-footer .ui-table-show-rows{padding-left:20px}.columns .ui-table-footer .ui-table-results{text-align:center}.columns .ui-table-footer .ui-table-controls{text-align:right}.columns .ui-table-footer .ui-table-control-next,.columns .ui-table-footer .ui-table-control-prev,.columns .ui-table-footer .ui-table-control-disabled{display:inline-block;background-color:transparent;padding:5px;vertical-align:middle;cursor:pointer;text-align:center}.columns .ui-table-footer .ui-table-control-disabled img{opacity:0.5}.columns .ui-columns-search{text-align:right}.columns .ui-columns-search input{width:200px;border-radius:10px;padding:4px 10px 4px 25px;border:2px solid #ccc;background-image:url(/sitemonitor/images/search.png);background-position:5px center;background-repeat:no-repeat}.columns .ui-columns-search input:focus{border:2px solid #6196CD;outline:none}
+    .columns td a{text-decoration:none;color:#656565;}
+    </style>
+</head>
+<body>
+
+<header id="header-wrapper" th:fragment="header" th:inline="text">
+	<h3>Site Monitor</h3>
+</header>
+
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<head>
+</head>
+<body style="font-family:Arial;font-size:1.1em;">
+
+<div style="margin:5px;">
+
+<div>
+	<div th:style="${status} == 'OK' ? 'border-radius:25px;background:#8AC007;' : 'border-radius:25px;background:#d34d17;'">
+		<div style="padding:20px;">
+		<h1 style="margin:0;">Alert!</h1>
+		Date/Time: <span th:text="${timestamp}"></span><br/>
+		Status: <span th:text="${statusDescription}"></span><br/>
+		</div>
+	</div>
+</div>
+
+</div>
+
+</body>
+</html>

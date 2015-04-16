@@ -1,0 +1,130 @@
+package sitemonitor.service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Future;
+
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Component;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring4.SpringTemplateEngine;
+
+import sitemonitor.repository.Event;
+import sitemonitor.repository.EventRepository;
+import sitemonitor.repository.Site;
+import sitemonitor.repository.SiteRepository;
+import sitemonitor.security.provider.XTrustProvider;
+
+@Component
+public class SiteMonitorService {
+	private Log logger = LogFactory.getLog(getClass());
+	
+	@Autowired
+	private SiteChecker siteChecker;
+	@Autowired
+	private SiteRepository siteRepository;
+	@Autowired
+	private EventRepository eventRepository;
+	@Autowired
+	private JavaMailSender mailSender;
+	@Autowired
+	private SpringTemplateEngine templateEngine;
+	
+	@Value("${sitemonitor.mail.from}")
+	private String from;
+	
+	public SiteMonitorService() {
+		if (logger.isDebugEnabled()) {
+			logger.debug("SiteMonitorService() Loading XTrustProvider...");
+		}		
+		XTrustProvider.install();
+	}
+	
+	public void monitorSites() throws Exception {
+		if (logger.isDebugEnabled()) {
+			logger.debug("SiteMonitorService.monitorSites() Starting...");
+		}
+		List<Future<Event>> tasks = new ArrayList<Future<Event>>();
+		Iterable<Site> sites = siteRepository.findAll();
+		for (Site site : sites) {
+			if (!"YES".equalsIgnoreCase(site.getActive())) {
+				continue;
+			}
+			tasks.add(siteChecker.handleSiteCheck(site));
+		}
+		while (!tasksDoneStatus(tasks)) {
+			try { Thread.sleep(10); } catch (Exception e) { }
+		}
+		
+		siteRepository.save(sites);
+		
+		for (Future<Event> task : tasks) {
+			Event event = task.get();
+			if (!"OK".equals(event.getSite().getStatus()) && event.getSite().getFailures() == event.getSite().getFailureLimit()) {
+				sendAlerts(event, event.getSite().getStatus());
+			} else if ("OK".equals(event.getSite().getStatus()) && "Y".equals(event.getStatusChange())) {
+				sendAlerts(event, "OK");
+			}
+			eventRepository.save(event);
+		}
+		
+		List<Event> purges = new ArrayList<Event>();
+		for (Event event : eventRepository.findAll()) {
+			if (new DateTime(event.getEventTime()).isBefore(new DateTime().minusDays(1))) {
+				purges.add(event);
+			}
+		}
+		eventRepository.delete(purges);
+		
+		if (logger.isDebugEnabled()) {
+			logger.debug("SiteMonitorService.monitorSites() Done.");
+		}
+	}
+	
+	private void sendAlerts(Event event, String status) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("SiteMonitorService.sendAlerts() [" + event.getSite().getName() + "] " + status);
+		}
+		try {
+			String[] to = event.getSite().getNotify().split(",");
+			String subject = "[" + event.getSite().getName() + "] " + status;
+			
+			final Context ctx = new Context();
+			ctx.setVariable("timestamp", event.getEventTimeDisplay());
+			ctx.setVariable("statusDescription", event.getDescription());
+			ctx.setVariable("status", event.getState());
+			String body = templateEngine.process("notification", ctx);
+			
+			MimeMessage message = mailSender.createMimeMessage();
+			MimeMessageHelper helper = new MimeMessageHelper(message, true);
+	
+			helper.setTo(to);
+			helper.setFrom(new InternetAddress(from));
+			helper.setReplyTo(from);
+			helper.setSubject(subject);
+			helper.setText(body, true);
+	     
+	        mailSender.send(message);
+		} catch (Exception e) {
+			logger.error("SiteMonitorService.sendAlerts() [" + event.getSite().getName() + "] Problem", e);
+		}
+	}
+	
+	private boolean tasksDoneStatus(List<Future<Event>> tasks) {
+		for (Future<Event> task : tasks) {
+			if (!task.isDone()) {
+				return false;
+			}
+		}
+		return true;
+	}	
+}

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html>
+<head th:replace="fragments/header :: head"></head>
+<body>
+
+<header th:replace="fragments/header :: header"></header>
+
+<div style="margin:10px;">
+
+<div class="ui-widget" >
+
+	<div class="ui-corner-all" style="padding:10px;margin:10px;border:solid 1px #eee;">
+	<h3 style="margin:0;">Sites</h3>
+	<div id="sitestable"></div>
+	<a href="" onclick="editSite(-1);return false;" class="button">Add New Site</a>
+	<a href="" onclick="purgeEvents();return false;" class="button">Purge All Events</a>
+	<a href="" t:href="@{/stats}" class="button">Refresh Page</a>
+	</div>
+
+	<div class="ui-corner-all" style="padding:10px;margin:10px;border:solid 1px #eee;">
+	<h3 style="margin:0;">Events</h3>
+	<div id="eventstable"></div>
+	</div>
+
+</div>
+
+</div>
+
+<div id="siteForm" style="display:none;">
+<form action="#" id="siteForm">
+	<input type="hidden" id="site-id" name="id" value=""/>
+	<input type="hidden" id="site-status" name="status" value=""/>
+	<input type="hidden" id="site-failures" name="failures" value=""/>
+  	
+  	<div style="padding-bottom:25px;">
+  	<label style="float:left;width:150px;text-align:right;padding:5px 10px 0 0;" for="name">Name</label>
+  	<input style="float:left;width:400px;" type="text" name="name" id="site-name" value=""/>
+  	</div>
+  	
+  	<br style="clear:both"/>
+
+  	<div style="padding-bottom:55px;">
+  	<label style="float:left;width:150px;text-align:right;padding:5px 10px 0 0;" for="url">URL</label>
+  	<textarea style="float:left;width:400px;height:50px;min-height:50px;" name="url" id="site-url"></textarea>
+  	</div>
+
+	<br style="clear:both"/>
+
+  	<div style="padding-bottom:25px;">
+  	<label style="float:left;width:150px;text-align:right;padding:5px 10px 0 0;" for="active">Active</label>
+  	<select style="float:left;width:95px;" name="active" id="site-active">
+  		<option value="YES">YES</option>
+  		<option value="NO">NO</option>
+  	</select>
+  	</div>
+
+	<br style="clear:both"/>
+
+  	<div style="padding-bottom:25px;">
+  	<label style="float:left;width:150px;text-align:right;padding:5px 10px 0 0;" for="failureLimit">Failure Limit</label>
+  	<input style="float:left;width:80px;" type="text" name="failureLimit" id="site-failureLimit" value=""/>
+  	</div>
+
+	<br style="clear:both"/>
+
+  	<div style="padding-bottom:25px;">
+  	<label style="float:left;width:150px;text-align:right;padding:5px 10px 0 0;" for="assertText">Assert Text</label>
+  	<input style="float:left;width:400px;" type="text" name="assertText" id="site-assertText" value=""/>
+  	</div>
+
+	<br style="clear:both"/>
+
+  	<div style="padding-bottom:25px;">
+  	<label style="float:left;width:150px;text-align:right;padding:5px 10px 0 0;" for="notify">Notify (comma separated)</label>
+  	<input style="float:left;width:400px;" type="text" name="notify" id="site-notify" value=""/>
+  	</div>
+
+</form>
+</div>
+
+<div id="graphdialog" style="display:none;">
+<div id="chartdiv" style="height:95%;width:95%; "></div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+
+<script type="text/javascript" th:inline="text">
+$(document).ready(function(){
+	loadSites();
+	loadEvents();
+	setInterval(function () {
+		$("span[class^='status-']").css('color','red');
+		$("span[class='status-OK']").css('color','green');
+	}, 500);
+	$.jqplot.config.enablePlugins = true;
+	//setTimeout(function(){ window.location = '[[@{/stats}]]'; }, 60000);
+});
+function graphSite(id) {
+	try {
+		
+		$("#graphdialog").dialog({
+			title : "Graph",
+			modal : true,
+			height : 600,
+			width : 900,
+			open: function( event, ui ) {
+				$.ajax({
+					url: "[[@{/service/chartdata/}]]" + id,
+					success: function(data){ plotGraph(data); }
+				});
+			}
+		});
+
+	} catch (err) { if (typeof console == "object") { console.log(err); } }
+}
+// http://www.jqplot.com/docs/files/plugins/jqplot-dateAxisRenderer-js.html
+// http://www.jqplot.com/deploy/dist/examples/
+function plotGraph(data) {
+	$.jqplot('chartdiv', data, {
+		title:'Response Times',
+		//axes:{yaxis:{min:0, max:2500}},
+		seriesDefaults: {   	    
+        	rendererOptions: { smooth: true}      
+      	}, 
+		series:[{
+			color:'#5FAB78',
+			showMarker:false
+			}],
+		axes:{
+	        xaxis:{
+	          label:'Time of Request',
+	          renderer:$.jqplot.DateAxisRenderer,
+	          rendererOptions:{
+                  tickRenderer:$.jqplot.CanvasAxisTickRenderer,
+                  numberTicks: 15
+              },
+              tickOptions:{ 
+            	  formatString:'%#I:%M%p', 
+            	  angle:-45
+              }
+	        },
+	        yaxis:{
+	          label:'Milliseconds',
+	          //autoscale:true,
+	          min:0,
+	          max:3000,
+	          labelRenderer: $.jqplot.CanvasAxisLabelRenderer
+	        }
+		}
+	});
+}
+function loadSites() {
+
+	//Hack for Thymeleaf to allow ampersand without escape.
+	var div = document.createElement('div');
+	div.innerHTML = "[[@{/sites(size=100,sort=name,name.dir=asc)}]]";
+	var url = div.firstChild.nodeValue;
+	
+	$.ajax({
+		url: url,
+		success: function(json){
+			// http://eisenbraun.github.io/columns/
+			sitesTable = $('#sitestable').columns({
+				data:json._embedded.sites,
+				size:50,
+				schema: [
+				{"header":"Edit", "key":"identity", 
+					"template":
+					'<a href="" onclick="editSite({{identity}});return false;">Edit</a> / ' + 
+					'<a href="" onclick="graphSite({{identity}});return false;">Graph</a> / ' + 
+					'<a href="" onclick="deleteSite({{identity}});return false;">Delete</a>'},
+				{"header":"Name", "key":"name"},
+				{"header":"Link", "key":"url", "template":'<a href="{{url}}" target="_blank">Open Site</a>'},
+				{"header":"Status", "key":"status", "template":'<span class="status-{{status}}">{{status}}</span>'},
+				{"header":"Response", "key":"responseTime"},
+				{"header":"Active", "key":"active"},
+				{"header":"Failures", "key":"failCountDisplay"},
+				{"header":"Assert Text", "key":"assertText"},
+				{"header":"Notify", "key":"notify"}
+				]
+			});
+		}
+	});
+}
+
+function loadEvents() {
+	$.ajax({
+		url: "[[@{/service/eventchanges}]]",
+		success: function(events){
+			// http://eisenbraun.github.io/columns/
+			if (!events.length) { return; }
+			eventsTable = $('#eventstable').columns({
+				data:events,
+				size:50,
+				schema: [
+				{"header":"Description", "key":"description"},
+				{"header":"Date/Time", "key":"eventTimeDisplay"},
+				{"header":"State", "key":"state", "template":'<span class="status-{{state}}">{{state}}</span>'},
+				//{"header":"Change", "key":"statusChange"},
+				{"header":"Response", "key":"responseTime"}
+				]
+			}); 
+		}
+	});
+}
+
+function editSite(id) {
+	if (id > 0) {
+		$.ajax({
+			url: "[[@{/sites/}]]" + id,
+			success: function(site){
+				$("#site-id").val(id);
+				$("#site-name").val(site.name);
+				$("#site-url").val(site.url);
+				$("#site-active").val(site.active);
+				$("#site-failureLimit").val(site.failureLimit);
+				$("#site-assertText").val(site.assertText);
+				$("#site-notify").val(site.notify);
+				$("#site-status").val(site.status);
+				$("#site-failures").val(site.failures);
+			}
+		});
+	} else {
+		$("#site-id").val("");
+		$("#site-name").val("");
+		$("#site-url").val("");
+		$("#site-active").val("");
+		$("#site-failureLimit").val("");
+		$("#site-assertText").val("");
+		$("#site-notify").val("");
+		$("#site-status").val("");
+		$("#site-failures").val("");
+	}
+	$("#siteForm").dialog({
+		title : "Edit/Add Site",
+		modal : true,
+		height : 400,
+		width : 600,
+		buttons : [ {
+			text : "Save",
+			click : function() {
+				saveSite();
+			}
+		}, {
+			text : "Cancel",
+			click : function() {
+				$(this).dialog("close");
+			}
+		} ]
+	});
+}
+function saveSite() {
+	id = $("#site-id").val();
+	name = $("#site-name").val();
+	url = $("#site-url").val();
+	active = $("#site-active").val();
+	failureLimit = $("#site-failureLimit").val();
+	assertText = $("#site-assertText").val();
+	notify = $("#site-notify").val();
+	status = $("#site-status").val();
+	failures = $("#site-failures").val();
+
+	if (typeof console == "object") { console.log("save site id:" + id); }
+	
+	json = '{';
+	if (id != "") {
+		json += '"id":"' + id + '",';
+	}
+	json += '"name":"' + name + '",';
+	json += '"url":"' + url + '",';
+	json += '"active":"' + active + '",';
+	json += '"failureLimit":"' + failureLimit + '",';
+	json += '"notify":"' + notify + '",';
+	json += '"assertText":"' + assertText + '",';
+	json += '"status":"' + status + '",';
+	json += '"failures":"' + failures + '"';
+	json += '}';
+	
+	if (typeof console == "object") { console.log("save site data:" + json); }
+	
+	$.ajax({
+		headers: { 
+	        'Accept': 'application/json',
+	        'Content-Type': 'application/json' 
+	    },
+		type : "POST",
+		url : '[[@{/sites}]]',
+		data : json,
+		//dataType : 'json', //null response will error out if we require json
+		success: function () {
+			window.location = '[[@{/stats}]]';
+	    },
+	    error: function(XMLHttpRequest, textStatus, errorThrown) { 
+	    	if (typeof console == "object") { 
+	    		console.log("XMLHttpRequest:" + XMLHttpRequest); 
+	    		console.log("textStatus:" + textStatus); 
+	    		console.log("errorThrown:" + errorThrown); 
+	    	}
+	        alert("Status: " + textStatus + "\nError: " + errorThrown); 
+	    }
+	});	
+}
+function deleteSite(id) {
+	if (id > 0) {
+		$.ajax({
+			headers: { 
+		        'Accept': 'application/json',
+		        'Content-Type': 'application/json' 
+		    },
+			type : "DELETE",
+			url : '[[@{/sites}]]/' + id,
+			success: function () {
+				window.location = '[[@{/stats}]]';
+		    },
+		    error: function(XMLHttpRequest, textStatus, errorThrown) { 
+		    	if (typeof console == "object") { 
+		    		console.log("XMLHttpRequest:" + XMLHttpRequest); 
+		    		console.log("textStatus:" + textStatus); 
+		    		console.log("errorThrown:" + errorThrown); 
+		    	}
+		    	alert("Status: " + textStatus + "\nError: " + errorThrown); 
+		    }
+		});
+	}	
+}
+function purgeEvents() {
+	$.ajax({
+		headers: { 
+	        'Accept': 'application/json',
+	        'Content-Type': 'application/json' 
+	    },
+		type : "DELETE",
+		url : '[[@{/service/eventspurge}]]',
+		success: function () {
+			window.location = '[[@{/stats}]]';
+	    },
+	    error: function(XMLHttpRequest, textStatus, errorThrown) { 
+	    	if (typeof console == "object") { 
+	    		console.log("XMLHttpRequest:" + XMLHttpRequest); 
+	    		console.log("textStatus:" + textStatus); 
+	    		console.log("errorThrown:" + errorThrown); 
+	    	}
+	    	alert("Status: " + textStatus + "\nError: " + errorThrown); 
+	    }
+	});	
+}
+</script>	
+
+</body>
+</html>

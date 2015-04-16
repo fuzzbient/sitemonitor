@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head th:replace="fragments/header :: head"></head>
+<body>
+
+<header th:replace="fragments/header :: header"></header>
+
+<div style="margin:100px;">
+
+<div class="ui-widget" >
+	<div class="ui-state-error ui-corner-all" style="padding:10px;">
+	<h1 style="margin:0;">Error</h1>
+	Failed on: <span th:text="${timestamp}"/><br/>
+	Status:  <span th:text="${status}"/><br/>
+	Error:  <span th:text="${error}"/><br/>
+	Message:  <span th:text="${message}"/><br/>
+	Path:  <span th:text="${path}"/><br/>
+	Exception:  <span th:text="${exception}"/><br/>
+	Headers: <span th:text="${headers}"/><br/>
+	<p style="font-size:12px;font-family:monospace;"><span th:text="${map}"/></p>
+	</div>
+</div>
+
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+
+</body>
+</html>
