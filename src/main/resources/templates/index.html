@@ -14,6 +14,7 @@
 	<div id="sitestable"></div>
 	<a href="" onclick="editSite(-1);return false;" class="button">Add New Site</a>
 	<a href="" onclick="purgeEvents();return false;" class="button">Purge All Events</a>
+	<a href="" onclick="graphAll();return false;" class="button">Graph All</a>
 	<a href="" t:href="@{/stats}" class="button">Refresh Page</a>
 	</div>
 
@@ -79,7 +80,7 @@
 </div>
 
 <div id="graphdialog" style="display:none;">
-<div id="chartdiv" style="height:95%;width:95%; "></div>
+<div id="chartdiv" style="height:95%;width:100%; "></div>
 </div>
 
 <div th:replace="fragments/footer :: footer"></div>
@@ -97,7 +98,6 @@ $(document).ready(function(){
 });
 function graphSite(id) {
 	try {
-		
 		$("#graphdialog").dialog({
 			title : "Graph",
 			modal : true,
@@ -106,26 +106,41 @@ function graphSite(id) {
 			open: function( event, ui ) {
 				$.ajax({
 					url: "[[@{/service/chartdata/}]]" + id,
-					success: function(data){ plotGraph(data); }
+					success: function(json){ plotGraph(json.data, json.labels); }
 				});
 			}
 		});
-
+	} catch (err) { if (typeof console == "object") { console.log(err); } }
+}
+function graphAll() {
+	try {
+		$("#graphdialog").dialog({
+			title : "Graph",
+			modal : true,
+			height : 600,
+			width : 900,
+			open: function( event, ui ) {
+				$.ajax({
+					url: "[[@{/service/chartalldata}]]",
+					success: function(json){ plotGraph(json.data, json.labels); }
+				});
+			}
+		});
 	} catch (err) { if (typeof console == "object") { console.log(err); } }
 }
 // http://www.jqplot.com/docs/files/plugins/jqplot-dateAxisRenderer-js.html
 // http://www.jqplot.com/deploy/dist/examples/
-function plotGraph(data) {
+function plotGraph(data, labels) {
 	$.jqplot('chartdiv', data, {
 		title:'Response Times',
-		//axes:{yaxis:{min:0, max:2500}},
 		seriesDefaults: {   	    
         	rendererOptions: { smooth: true}      
       	}, 
-		series:[{
-			color:'#5FAB78',
-			showMarker:false
-			}],
+		series: labels,
+		legend: {
+	        show: true,
+	        placement: 'outsideGrid'
+	    },
 		axes:{
 	        xaxis:{
 	          label:'Time of Request',

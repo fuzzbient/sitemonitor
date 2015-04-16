@@ -1,5 +1,6 @@
 package sitemonitor.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,44 +69,61 @@ public class MonitorController {
 		return result;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/chartdata/{id}", method = RequestMethod.GET)
-	public String[][][] chartData(@PathVariable("id") Long id) {
+	public Map<String,Object> chartData(@PathVariable("id") Long id) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("MonitorController.chartData(" + id + ")");
 		}
+		
 		Site site = siteRepository.findOne(id);
+		Map<String,String> labels = new HashMap<String,String>();
+		labels.put("label", site.getName()); 
+		
 		List<Event> events = eventRepository.findBySite(site, new Sort(Sort.Direction.ASC, "eventTime"));
-		String[][][] result = new String[1][events.size()][2];
+		String[][][] data = new String[1][events.size()][2];
 		for (int i = 0; i < events.size(); i++) {
 			Event event = events.get(i);
-			//result[0][i][0] = i + "";
-			result[0][i][0] = event.getChartTimeDisplay();
-			result[0][i][1] = event.getResponseTime() + "";
+			data[0][i][0] = event.getChartTimeDisplay();
+			data[0][i][1] = event.getResponseTime() + "";
 		}
+		
+		Map<String,Object> result = new HashMap<String,Object>();
+		result.put("labels", Lists.newArrayList(labels));
+		result.put("data", data);
+		
 		return result;
 	}
 
 	@RequestMapping(value = "/chartalldata", method = RequestMethod.GET)
-	public String[][][] chartData() {
+	public Map<String,Object> chartData() {
 		if (logger.isDebugEnabled()) {
 			logger.debug("MonitorController.chartData()");
 		}
 		List<Site> sites = Lists.newArrayList(siteRepository.findAll());
+		List<Map<String,String>> labels = new ArrayList<Map<String,String>>();
 		
-		String[][][] result = new String[sites.size()][][];
+		String[][][] data = new String[sites.size()][][];
 		int s = 0;
 		for (Site site : sites) {
+			Map<String,String> label = new HashMap<String,String>();
+			label.put("label", site.getName()); 
+			labels.add(label);
+			
 			List<Event> events = eventRepository.findBySite(site, new Sort(Sort.Direction.ASC, "eventTime"));
-			result[s] = new String[events.size()][2];
+			data[s] = new String[events.size()][2];
 			for (int i = 0; i < events.size(); i++) {
 				Event event = events.get(i);
-				//result[0][i][0] = i + "";
-				result[s][i][0] = event.getChartTimeDisplay();
-				result[s][i][1] = event.getResponseTime() + "";
+				data[s][i][0] = event.getChartTimeDisplay();
+				data[s][i][1] = event.getResponseTime() + "";
 			}
 			s++;
 		}
 		
+		Map<String,Object> result = new HashMap<String,Object>();
+		result.put("labels", Lists.newArrayList(labels));
+		result.put("data", data);
+
 		return result;
 	}
 
