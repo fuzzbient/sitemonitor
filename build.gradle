@@ -21,7 +21,8 @@ springBoot {
 }
 
 test {
-	systemProperty 'spring.config.name', 'unittest'
+	systemProperty 'spring.mail.host', 'localhost'
+	systemProperty 'sitemonitor.mail.from', 'unittest@unittesting.org'
 }
 
 jar {
