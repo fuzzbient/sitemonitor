@@ -69,7 +69,9 @@ public class SiteMonitorService {
 		
 		for (Future<Event> task : tasks) {
 			Event event = task.get();
-			if (!"OK".equals(event.getSite().getStatus()) && event.getSite().getFailures() == event.getSite().getFailureLimit()) {
+			if (!"OK".equals(event.getSite().getStatus()) && 
+				event.getSite().getFailures() == event.getSite().getFailureLimit() &&
+				"YES".equalsIgnoreCase(event.getSite().getActive())) {
 				sendAlerts(event, event.getSite().getStatus());
 			} else if ("OK".equals(event.getSite().getStatus()) && "Y".equals(event.getStatusChange())) {
 				sendAlerts(event, "OK");
