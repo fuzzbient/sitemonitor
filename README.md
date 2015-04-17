@@ -8,6 +8,24 @@ Includes
 3. Response time history reporting
 4. Persistent storage and configuration of sites to monitor
 
+### Main Dashboard
+
+<p>
+  <img src="https://raw.githubusercontent.com/fuzzbient/sitemonitor/master/doc/screenshot1.jpg" style="width:600px" alt="Screenshot 1"/>
+</p>
+
+### Response Graph
+
+<p>
+  <img src="https://raw.githubusercontent.com/fuzzbient/sitemonitor/master/doc/screenshot2.jpg" style="width:600px" alt="Screenshot 2"/>
+</p>
+
+### Adding a Site
+
+<p>
+  <img src="https://raw.githubusercontent.com/fuzzbient/sitemonitor/master/doc/screenshot3.jpg" style="width:600px" alt="Screenshot 3"/>
+</p>
+
 ## Quickstart
 
 **application.properties** Change the spring.jpa.hibernate.ddl-auto property to create on first run to generate the H2 database needed for persistent storage.
