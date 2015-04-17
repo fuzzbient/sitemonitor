@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -35,6 +37,10 @@ public class Site implements Serializable {
 	private Set<Event> events;
 	
 	public Site() {
+	}
+	
+	public String getNotifyDisplay() {
+		return StringUtils.replace(notify, ",", ", ");
 	}
 	
 	public String getIdentity() {

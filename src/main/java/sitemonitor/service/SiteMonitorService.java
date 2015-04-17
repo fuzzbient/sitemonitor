@@ -7,6 +7,7 @@ import java.util.concurrent.Future;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
@@ -97,6 +98,10 @@ public class SiteMonitorService {
 			logger.debug("SiteMonitorService.sendAlerts() [" + event.getSite().getName() + "] " + status);
 		}
 		try {
+			if (StringUtils.isBlank(event.getSite().getNotify())) {
+				return;
+			}
+			
 			String[] to = event.getSite().getNotify().split(",");
 			String subject = "[" + event.getSite().getName() + "] " + status;
 			

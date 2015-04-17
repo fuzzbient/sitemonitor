@@ -9,7 +9,7 @@
 
 <div class="ui-widget" >
 
-	<div class="ui-corner-all" style="padding:10px;margin:10px;border:solid 1px #eee;">
+	<div class="ui-corner-all" style="padding:10px;margin:10px;border:solid 1px #eee;background-color:#fff;">
 	<h3 style="margin:0;">Sites</h3>
 	<div id="sitestable"></div>
 	<a href="" onclick="editSite(-1);return false;" class="button">Add New Site</a>
@@ -18,7 +18,7 @@
 	<a href="" t:href="@{/stats}" class="button">Refresh Page</a>
 	</div>
 
-	<div class="ui-corner-all" style="padding:10px;margin:10px;border:solid 1px #eee;">
+	<div class="ui-corner-all" style="padding:10px;margin:10px;border:solid 1px #eee;background-color:#fff;">
 	<h3 style="margin:0;">Events</h3>
 	<div id="eventstable"></div>
 	</div>
@@ -101,8 +101,8 @@ function graphSite(id) {
 		$("#graphdialog").dialog({
 			title : "Graph",
 			modal : true,
-			height : 600,
-			width : 900,
+			height : 800,
+			width : 1000,
 			open: function( event, ui ) {
 				$.ajax({
 					url: "[[@{/service/chartdata/}]]" + id,
@@ -117,8 +117,8 @@ function graphAll() {
 		$("#graphdialog").dialog({
 			title : "Graph",
 			modal : true,
-			height : 600,
-			width : 900,
+			height : 800,
+			width : 1000,
 			open: function( event, ui ) {
 				$.ajax({
 					url: "[[@{/service/chartalldata}]]",
@@ -182,12 +182,12 @@ function loadSites() {
 			// http://eisenbraun.github.io/columns/
 			sitesTable = $('#sitestable').columns({
 				data:json._embedded.sites,
-				size:50,
+				size:5,
 				schema: [
 				{"header":"Edit", "key":"identity", 
 					"template":
-					'<a href="" onclick="editSite({{identity}});return false;">Edit</a> / ' + 
-					'<a href="" onclick="graphSite({{identity}});return false;">Graph</a> / ' + 
+					'<a href="" onclick="editSite({{identity}});return false;">Edit</a>&nbsp;/&nbsp;' + 
+					'<a href="" onclick="graphSite({{identity}});return false;">Graph</a>&nbsp;/&nbsp;' + 
 					'<a href="" onclick="deleteSite({{identity}});return false;">Delete</a>'},
 				{"header":"Name", "key":"name"},
 				{"header":"Link", "key":"url", "template":'<a href="{{url}}" target="_blank">Open Site</a>'},
@@ -196,7 +196,7 @@ function loadSites() {
 				{"header":"Active", "key":"active"},
 				{"header":"Failures", "key":"failCountDisplay"},
 				{"header":"Assert Text", "key":"assertText"},
-				{"header":"Notify", "key":"notify"}
+				{"header":"Notify", "key":"notifyDisplay", "template":'<div style="word-wrap:break-word;max-width:200px;">{{notifyDisplay}}</div>'}
 				]
 			});
 		}
@@ -211,7 +211,7 @@ function loadEvents() {
 			if (!events.length) { return; }
 			eventsTable = $('#eventstable').columns({
 				data:events,
-				size:50,
+				size:10,
 				schema: [
 				{"header":"Description", "key":"description"},
 				{"header":"Date/Time", "key":"eventTimeDisplay"},
