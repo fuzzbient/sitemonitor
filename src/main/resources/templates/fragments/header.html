@@ -17,10 +17,11 @@
 	<script src="js/jquery.jqplot.min.js" th:src="@{/js/jquery.jqplot.min.js}"></script>
 	<script src="js/jqplot.json2.min.js" th:src="@{/js/jqplot.json2.min.js}"></script>
 	<script src="js/jqplot.canvasAxisLabelRenderer.min.js" th:src="@{/js/jqplot.canvasAxisLabelRenderer.min.js}"></script>
-	<script src="js/jqplot.canvasTextRenderer.min.js" th:src="@{/js/jqplot.canvasTextRenderer.min.js}"></script>
-	<script src="js/jqplot.dateAxisRenderer.min.js" th:src="@{/js/jqplot.dateAxisRenderer.min.js}"></script>
 	<script src="js/jqplot.canvasAxisTickRenderer.min.js" th:src="@{/js/jqplot.canvasAxisTickRenderer.min.js}"></script>
+	<script src="js/jqplot.canvasTextRenderer.min.js" th:src="@{/js/jqplot.canvasTextRenderer.min.js}"></script>
 	<script src="js/jqplot.cursor.min.js" th:src="@{/js/jqplot.cursor.min.js}"></script>
+	<script src="js/jqplot.dateAxisRenderer.min.js" th:src="@{/js/jqplot.dateAxisRenderer.min.js}"></script>
+	<script src="js/jqplot.highlighter.min.js" th:src="@{/js/jqplot.highlighter.min.js}"></script>
 	<script type="text/javascript">
 	$(document).ready(function(){
 		$( ".button" ).button();
@@ -52,7 +53,8 @@
 	.columns .ui-columns-search input{width:200px;border-radius:10px;padding:4px 10px 4px 25px;border:2px solid #ccc;background-image:url(/sitemonitor/images/search.png);background-position:5px center;background-repeat:no-repeat}
 	.columns .ui-columns-search input:focus{border:2px solid #6196CD;outline:none}
     .columns td a{text-decoration:none;color:#656565;}
-    </style>
+    .jqplot-highlighter-tooltip{font-size:15px;}
+	</style>
 </head>
 <body>
 

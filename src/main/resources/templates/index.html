@@ -136,11 +136,11 @@ function plotGraph(data, labels) {
 	graph = $.jqplot('chartdiv', data, {
 		title:'Response Times',
 		seriesDefaults: {   	    
-        	rendererOptions: { smooth: true}      
+        	rendererOptions: { 
+        		smooth: true,
+        		showMarker: false
+        	}      
       	}, 
-      	seriesDefaults: {
-      		showMarker: false
-        },
 		series: labels,
 		legend: {
 	        show: true,
@@ -163,15 +163,24 @@ function plotGraph(data, labels) {
 	          label:'Milliseconds',
 	          //autoscale:true,
 	          min:0,
-	          max:3000,
+	          max:10000,
 	          labelRenderer: $.jqplot.CanvasAxisLabelRenderer
 	        }
 		}, 
         cursor:{
             show: true, 
             zoom: true
+        },
+        highlighter: {
+            show: true,
+            showTooltip: true,
+            tooltipContentEditor:tooltipContentEditor
         } 
 	});
+}
+function tooltipContentEditor(str, seriesIndex, pointIndex, plot) {
+    // display series_label, x-axis_tick, y-axis value
+    return plot.series[seriesIndex]["label"] + ", " + plot.data[seriesIndex][pointIndex];
 }
 function loadSites() {
 
