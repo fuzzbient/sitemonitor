@@ -166,7 +166,11 @@ function plotGraph(data, labels) {
 	          max:3000,
 	          labelRenderer: $.jqplot.CanvasAxisLabelRenderer
 	        }
-		}
+		}, 
+        cursor:{
+            show: true, 
+            zoom: true
+        } 
 	});
 }
 function loadSites() {

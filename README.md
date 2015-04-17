@@ -14,6 +14,8 @@ Includes
 
 **sitemonitor.security.provider.XTrustProvider** Change the static configuration to limit verify by hostname if desired.
 
+**Directories To Add:** Create a logs directory and a db directory under the application's home directory (where you've placed the jar to run).
+
 Two system properties are expected on startup (mail host and from email address).
 
 ```bash
