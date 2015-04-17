@@ -32,6 +32,7 @@
 	<input type="hidden" id="site-id" name="id" value=""/>
 	<input type="hidden" id="site-status" name="status" value=""/>
 	<input type="hidden" id="site-failures" name="failures" value=""/>
+	<input type="hidden" id="site-lastNotification" name="lastNotification" value=""/>
   	
   	<div style="padding-bottom:25px;">
   	<label style="float:left;width:150px;text-align:right;padding:5px 10px 0 0;" for="name">Name</label>
@@ -205,6 +206,7 @@ function loadSites() {
 				{"header":"Name", "key":"name"},
 				{"header":"Link", "key":"url", "template":'<a href="{{url}}" target="_blank">Open Site</a>'},
 				{"header":"Status", "key":"status", "template":'<span class="status-{{status}}">{{status}}</span>'},
+				//{"header":"Last Notification", "key":"lastNotification"},
 				{"header":"Response", "key":"responseTime"},
 				{"header":"Active", "key":"active"},
 				{"header":"Failures", "key":"failCountDisplay"},
@@ -251,6 +253,7 @@ function editSite(id) {
 				$("#site-notify").val(site.notify);
 				$("#site-status").val(site.status);
 				$("#site-failures").val(site.failures);
+				$("#site-lastNotification").val(site.lastNotification);
 			}
 		});
 	} else {
@@ -263,6 +266,7 @@ function editSite(id) {
 		$("#site-notify").val("");
 		$("#site-status").val("");
 		$("#site-failures").val("");
+		$("#site-lastNotification").val("");
 	}
 	$("#siteForm").dialog({
 		title : "Edit/Add Site",
@@ -292,6 +296,7 @@ function saveSite() {
 	notify = $("#site-notify").val();
 	status = $("#site-status").val();
 	failures = $("#site-failures").val();
+	lastNotification = $("#site-lastNotification").val();
 
 	if (typeof console == "object") { console.log("save site id:" + id); }
 	
@@ -306,7 +311,8 @@ function saveSite() {
 	json += '"notify":"' + notify + '",';
 	json += '"assertText":"' + assertText + '",';
 	json += '"status":"' + status + '",';
-	json += '"failures":"' + failures + '"';
+	json += '"failures":"' + failures + '",';
+	json += '"lastNotification":"' + lastNotification + '"';
 	json += '}';
 	
 	if (typeof console == "object") { console.log("save site data:" + json); }

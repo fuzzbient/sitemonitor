@@ -31,6 +31,7 @@ public class Site implements Serializable {
 	private long failures;
 	private long failureLimit;
 	private String notify;
+	private String lastNotification;
 	
 	@JsonIgnore
 	@OneToMany(cascade={CascadeType.ALL}, mappedBy="site")
@@ -137,6 +138,14 @@ public class Site implements Serializable {
 
 	public void setEvents(Set<Event> events) {
 		this.events = events;
+	}
+
+	public String getLastNotification() {
+		return lastNotification;
+	}
+
+	public void setLastNotification(String lastNotification) {
+		this.lastNotification = lastNotification;
 	}
 
 }

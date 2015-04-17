@@ -70,12 +70,17 @@ public class SiteMonitorService {
 		
 		for (Future<Event> task : tasks) {
 			Event event = task.get();
-			if (!"OK".equals(event.getSite().getStatus()) && 
-				event.getSite().getFailures() == event.getSite().getFailureLimit() &&
-				"YES".equalsIgnoreCase(event.getSite().getActive())) {
-				sendAlerts(event, event.getSite().getStatus());
-			} else if ("OK".equals(event.getSite().getStatus()) && "Y".equals(event.getStatusChange())) {
+			Site site = siteRepository.findOne(event.getSite().getId());
+			if (!"OK".equals(site.getStatus()) && 
+					site.getFailures() == site.getFailureLimit() &&
+				"YES".equalsIgnoreCase(site.getActive())) {
+				sendAlerts(event, site.getStatus());
+				site.setLastNotification("FAIL");
+				siteRepository.save(site);
+			} else if ("OK".equals(site.getStatus()) && "Y".equals(event.getStatusChange()) && "FAIL".equals(site.getLastNotification())) {
 				sendAlerts(event, "OK");
+				site.setLastNotification("OK");
+				siteRepository.save(site);
 			}
 			eventRepository.save(event);
 		}
