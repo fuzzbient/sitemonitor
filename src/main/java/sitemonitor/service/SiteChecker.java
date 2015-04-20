@@ -58,7 +58,7 @@ public class SiteChecker {
 			if (logger.isDebugEnabled()) {
 				logger.debug("SiteChecker.handleSiteCheck() [" + site.getName() + "] Problem", e);
 			}
-			status = e.toString();
+			status = "FAIL " + e.toString();
 		} finally {
 			if (response != null) {
 				try { response.close(); } catch (Exception  ex){}
