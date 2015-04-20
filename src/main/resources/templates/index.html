@@ -115,6 +115,7 @@ function graphSite(id) {
 }
 function graphAll() {
 	try {
+		$("#chartdiv").html('<div style="padding:100px 450px;"><img src="images/ajax-loader.gif"/></div>');
 		$("#graphdialog").dialog({
 			title : "Graph",
 			modal : true,
@@ -133,6 +134,7 @@ function graphAll() {
 // http://www.jqplot.com/deploy/dist/examples/
 var graph;
 function plotGraph(data, labels) {
+	$("#chartdiv").html("");
 	if (graph) { graph.destroy(); }
 	graph = $.jqplot('chartdiv', data, {
 		title:'Response Times',

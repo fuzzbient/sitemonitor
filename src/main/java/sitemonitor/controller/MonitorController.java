@@ -63,7 +63,7 @@ public class MonitorController {
 		if (logger.isDebugEnabled()) {
 			logger.debug("MonitorController.eventsPurge()");
 		}
-		eventRepository.delete(eventRepository.findAll());
+		eventRepository.deleteAll();
 		Map<String,String> result = new HashMap<String,String>();
 		result.put("message","success");
 		return result;
