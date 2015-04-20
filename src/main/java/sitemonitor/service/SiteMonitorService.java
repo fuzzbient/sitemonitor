@@ -85,16 +85,29 @@ public class SiteMonitorService {
 			eventRepository.save(event);
 		}
 		
-		List<Event> purges = new ArrayList<Event>();
-		for (Event event : eventRepository.findAll()) {
-			if (new DateTime(event.getEventTime()).isBefore(new DateTime().minusDays(1))) {
-				purges.add(event);
-			}
-		}
-		eventRepository.delete(purges);
+		purgeOldEvents();
 		
 		if (logger.isDebugEnabled()) {
 			logger.debug("SiteMonitorService.monitorSites() Done.");
+		}
+	}
+	
+	private void purgeOldEvents() {
+		if (logger.isDebugEnabled()) {
+			logger.debug("SiteMonitorService.purgeOldEvents()");
+		}
+		int purgeCount = 0;
+		for (Event event : eventRepository.findAll()) {
+			if (new DateTime(event.getEventTime()).isBefore(new DateTime().minusHours(24))) {
+				purgeCount++;
+			}
+		}
+		if (logger.isDebugEnabled()) {
+			logger.debug("SiteMonitorService.monitorSites() Events remaining to purge [" + purgeCount + "]...");
+		}
+		eventRepository.deleteEventsOlderThan(new DateTime().minusHours(24).toDate());
+		if (logger.isDebugEnabled()) {
+			logger.debug("SiteMonitorService.purgeOldEvents() Completed. Count of Events purged [" + purgeCount + "]");
 		}
 	}
 	
@@ -108,7 +121,7 @@ public class SiteMonitorService {
 			}
 			
 			String[] to = event.getSite().getNotify().split(",");
-			String subject = "[" + event.getSite().getName() + "] " + status;
+			String subject = "**SiteMonitor** [" + event.getSite().getName() + "] " + status;
 			
 			final Context ctx = new Context();
 			ctx.setVariable("timestamp", event.getEventTimeDisplay());
