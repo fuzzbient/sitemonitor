@@ -31,6 +31,13 @@ public class Event implements Serializable {
 	public Event() {
 	}
 	
+	public String getSiteName() {
+		if (site == null) {
+			return "";
+		}
+		return site.getName();
+	}
+	
 	public String getEventTimeDisplay() {
 		SimpleDateFormat df = new SimpleDateFormat("MM/dd/YYYY HH:mm:ss aa");
 		return df.format(eventTime);

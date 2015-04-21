@@ -209,7 +209,7 @@ function loadSites() {
 				{"header":"Link", "key":"url", "template":'<a href="{{url}}" target="_blank">Open Site</a>'},
 				{"header":"Status", "key":"status", "template":'<span class="status-{{status}}">{{status}}</span>'},
 				//{"header":"Last Notification", "key":"lastNotification"},
-				{"header":"Response", "key":"responseTime"},
+				{"header":"Resp (msec)", "key":"responseTime"},
 				{"header":"Active", "key":"active"},
 				{"header":"Failures", "key":"failCountDisplay"},
 				{"header":"Assert Text", "key":"assertText"},
@@ -230,11 +230,11 @@ function loadEvents() {
 				data:events,
 				size:10,
 				schema: [
-				{"header":"Description", "key":"description"},
+				{"header":"Site", "key":"siteName"},
 				{"header":"Date/Time", "key":"eventTimeDisplay"},
 				{"header":"State", "key":"state", "template":'<span class="status-{{state}}">{{state}}</span>'},
 				//{"header":"Change", "key":"statusChange"},
-				{"header":"Response", "key":"responseTime"}
+				{"header":"Resp (msec)", "key":"responseTime"}
 				]
 			}); 
 		}
