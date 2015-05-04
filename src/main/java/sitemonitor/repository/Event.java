@@ -39,7 +39,7 @@ public class Event implements Serializable {
 	}
 	
 	public String getEventTimeDisplay() {
-		SimpleDateFormat df = new SimpleDateFormat("MM/dd/YYYY HH:mm:ss aa");
+		SimpleDateFormat df = new SimpleDateFormat("MM/dd/YYYY hh:mm:ss aa");
 		return df.format(eventTime);
 	}
 
