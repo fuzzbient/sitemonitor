@@ -1,6 +1,6 @@
 # SiteMonitor
 
-SiteMonitor is an application to monitor site up status by requesting configured URL paths and verifying that the contents in the response match the requred values.
+SiteMonitor is an application to monitor site up status by requesting configured URL paths and verifying that the contents in the response match the required values.
 
 Includes
 1. Email Alert Capability
