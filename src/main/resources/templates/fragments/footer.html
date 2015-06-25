@@ -5,13 +5,29 @@
 <body>
 
 <!-- Footer -->
-<div id="footer-wrapper" th:fragment="footer" th:inline="text">
-	
+<footer th:fragment="footer" th:inline="text">
 	<div id="footer" class="container">
 	
 	</div>
+<!--[if lt IE 9]><script src="js/excanvas.min.js" th:src="@{/js/excanvas.min.js}"></script><![endif]-->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>	
+<script src="js/jquery.columns.min.js" th:src="@{/js/jquery.columns.min.js}"></script>
+<script src="js/jquery.jqplot.min.js" th:src="@{/js/jquery.jqplot.min.js}"></script>
+<script src="js/jqplot.json2.min.js" th:src="@{/js/jqplot.json2.min.js}"></script>
+<script src="js/jqplot.canvasAxisLabelRenderer.min.js" th:src="@{/js/jqplot.canvasAxisLabelRenderer.min.js}"></script>
+<script src="js/jqplot.canvasAxisTickRenderer.min.js" th:src="@{/js/jqplot.canvasAxisTickRenderer.min.js}"></script>
+<script src="js/jqplot.canvasTextRenderer.min.js" th:src="@{/js/jqplot.canvasTextRenderer.min.js}"></script>
+<script src="js/jqplot.cursor.min.js" th:src="@{/js/jqplot.cursor.min.js}"></script>
+<script src="js/jqplot.dateAxisRenderer.min.js" th:src="@{/js/jqplot.dateAxisRenderer.min.js}"></script>
+<script src="js/jqplot.highlighter.min.js" th:src="@{/js/jqplot.highlighter.min.js}"></script>
+<script type="text/javascript">
+$(document).ready(function(){
 	
-</div>
+});
+</script>
+</footer>
 
 </body>
 </html>
