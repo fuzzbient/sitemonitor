@@ -69,6 +69,21 @@ public class MonitorController {
 		return result;
 	}
 	
+	@RequestMapping(value = "/toggleactive/{id}", method = RequestMethod.GET)
+	public Map<String,Object> toggleActive(@PathVariable("id") Long id) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("MonitorController.toggleActive(" + id + ")");
+		}
+		
+		Site site = siteRepository.findOne(id);
+		site.toggleActive();
+		siteRepository.save(site);
+		
+		Map<String,Object> result = new HashMap<String,Object>();
+		result.put("success", "true");
+		return result;
+	}
+	
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/chartdata/{id}", method = RequestMethod.GET)
 	public Map<String,Object> chartData(@PathVariable("id") Long id) {

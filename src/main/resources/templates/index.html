@@ -172,6 +172,12 @@ $(document).ready(function(){
 	}, 500);
 	$.jqplot.config.enablePlugins = true;
 });
+function toggleActive(id) {
+	$.ajax({
+		url: "[[@{/service/toggleactive/}]]" + id,
+		success: function(json){ window.location = '[[@{/stats}]]'; }
+	});
+}
 function graphSite(id) {
 	try {
 		$("#chartdiv").html('<div style="padding:100px 450px;"><img src="images/ajax-loader.gif"/></div>');
@@ -274,7 +280,9 @@ function loadSites() {
 						'<th scope="row"><a href="'+site.url+'" target="_blank" style="color:#444;text-decoration:none;">'+site.name+'</a></th>'+
 						'<td><span class="status-'+site.status+'">'+site.status+'</span></td>'+
 						'<td>'+site.responseTime+'&nbsp;msec.</td>'+
-						'<td>'+site.active+'</td>'+
+						'<td>'+
+						'<a href="" onclick="toggleActive('+site.identity+');return false;" class="btn btn-sm btn-default active-'+site.active+'">'+site.active+'</a>'+
+						'</td>'+
 						'<td>'+site.failCountDisplay+'</td>'+
 						'<td>'+site.assertText+'</td>'+
 						'<td>'+

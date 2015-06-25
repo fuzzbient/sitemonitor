@@ -40,6 +40,14 @@ public class Site implements Serializable {
 	public Site() {
 	}
 	
+	public void toggleActive() {
+		if ("YES".equals(getActive())) {
+			setActive("NO");
+		} else {
+			setActive("YES");
+		}
+	}
+	
 	public String getNotifyDisplay() {
 		return StringUtils.replace(notify, ",", ", ");
 	}

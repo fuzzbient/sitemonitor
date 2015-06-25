@@ -5,6 +5,8 @@ body {
   height:100%;
   margin-bottom: 60px;
 }
+.active-YES { color:green; }
+.active-NO { color:red; }
 .footer {
   position: absolute;
   bottom: 0;
