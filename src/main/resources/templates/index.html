@@ -25,7 +25,7 @@
 			<div class="ui-corner-all" style="padding:10px;margin:10px;border:solid 1px #eee;background-color:#fff;">
 			
 			<h5>SITES</h5>
-			<table class="table table-condensed">
+			<table id="example" class="table table-condensed" cellspacing="0" width="100%">
 			  <thead>
 			    <tr>
 			      <th>&nbsp;</th>
@@ -38,9 +38,8 @@
 			      <th>Notification</th>
 			    </tr>
 			  </thead>
-			  <tbody id="sitestbody">
-			  </tbody>
 			</table>
+			
 			<div class="btn-group" role="group">
 			<a href="" onclick="editSite(-1);return false;" class="btn btn-primary">Add New Site</a>
 			<a href="" onclick="purgeEvents();return false;" class="btn btn-danger">Purge All Events</a>
@@ -164,7 +163,80 @@
 
 <script type="text/javascript" th:inline="text">
 $(document).ready(function(){
-	loadSites();
+	//Hack for Thymeleaf to allow ampersand without escape.
+	var div = document.createElement('div');
+	div.innerHTML = "[[@{/sites(size=100,sort=name,name.dir=asc)}]]";
+	var sitesAjaxUrl = div.firstChild.nodeValue;
+	
+	$('#example').DataTable({
+		//"paging": false,
+		"pageLength": 50,
+		"ajax":  {
+			"url": sitesAjaxUrl,
+			"dataSrc": "_embedded.sites"
+		},
+		"columnDefs": [
+			{
+		      "orderable": false,
+		      "targets": 0
+			},
+			{
+			  "cellType": "th",
+			  "createdCell": function (td, cellData, rowData, row, col) {
+				  $(td).prop('scope', 'row')
+			  },
+			  "targets": 1
+			}
+		],
+		"columns": [
+			{ 
+			   "data": "identity",
+			   "render": function ( data, type, row, meta ) {
+				   return '<div class="btn-group" role="group" style="width:160px;">'+
+					'<a href="" onclick="editSite('+data+');return false;" class="btn btn-sm btn-primary">Edit</a>'+ 
+					'<a href="" onclick="graphSite('+data+');return false;" class="btn btn-sm btn-info">Graph</a>'+ 
+					'<a href="" onclick="deleteSite('+data+');return false;" class="btn btn-sm btn-danger">Delete</a>'+
+					'</div>';
+			   }
+			},
+			{ 
+			  "data": "name",
+			  "render": function ( data, type, row, meta ) {
+				  return '<a href="'+row.url+'" target="_blank" style="color:#444;text-decoration:none;">'+row.name+'</a>';
+			  }
+			},
+			{ 
+			  "data": "status",
+			  "render": function ( data, type, row, meta ) {
+				  return '<span class="status-'+row.status+'">'+row.status+'</span>';
+			  }
+			},
+			{ 
+			  "data": "responseTime",
+			  "render": function ( data, type, row, meta ) {
+				  return row.responseTime + '&nbsp;msec.';
+			  }
+			},
+			{ 
+			  "data": "active",
+			  "render": function ( data, type, row, meta) {
+				  return '<a href="" onclick="toggleActive('+row.identity+');return false;" class="btn btn-sm btn-default active-'+row.active+'">'+row.active+'</a>';
+			  }
+			},
+			{ "data": "failCountDisplay" },
+			{ "data": "assertText" },
+			{ 
+			  "data": "notify",
+			  "render": function ( data, type, row, meta ) {
+				  return '<button type="button" class="btn btn-sm btn-success" data-toggle="popover" title="Email Addresses" data-placement="bottom" data-content="'+row.notifyDisplay+'">View Emails</button>';
+			  }
+			}
+		],
+		"fnDrawCallback": function (oSettings) {
+			$('[data-toggle="popover"]').popover();
+	    }
+	}).order( [ 1, 'asc' ] );
+	
 	loadEvents();
 	setInterval(function () {
 		$("span[class^='status-']").css('color','red');
@@ -257,44 +329,6 @@ function tooltipContentEditor(str, seriesIndex, pointIndex, plot) {
     // display series_label, x-axis_tick, y-axis value
     return plot.series[seriesIndex]["label"] + ", " + plot.data[seriesIndex][pointIndex];
 }
-function loadSites() {
-
-	//Hack for Thymeleaf to allow ampersand without escape.
-	var div = document.createElement('div');
-	div.innerHTML = "[[@{/sites(size=100,sort=name,name.dir=asc)}]]";
-	var url = div.firstChild.nodeValue;
-	
-	$.ajax({
-		url: url,
-		success: function(json){
-			$.each(json._embedded.sites, function(i, site) { 
-				$("#sitestbody").append(
-						'<tr>'+
-						'<td>'+
-						'<div class="btn-group" role="group" style="width:160px;">'+
-						'<a href="" onclick="editSite('+site.identity+');return false;" class="btn btn-sm btn-primary">Edit</a>'+ 
-						'<a href="" onclick="graphSite('+site.identity+');return false;" class="btn btn-sm btn-info">Graph</a>'+ 
-						'<a href="" onclick="deleteSite('+site.identity+');return false;" class="btn btn-sm btn-danger">Delete</a>'+
-						'</div>'+
-						'</td>'+
-						'<th scope="row"><a href="'+site.url+'" target="_blank" style="color:#444;text-decoration:none;">'+site.name+'</a></th>'+
-						'<td><span class="status-'+site.status+'">'+site.status+'</span></td>'+
-						'<td>'+site.responseTime+'&nbsp;msec.</td>'+
-						'<td>'+
-						'<a href="" onclick="toggleActive('+site.identity+');return false;" class="btn btn-sm btn-default active-'+site.active+'">'+site.active+'</a>'+
-						'</td>'+
-						'<td>'+site.failCountDisplay+'</td>'+
-						'<td>'+site.assertText+'</td>'+
-						'<td>'+
-						'<button type="button" class="btn btn-sm btn-success" data-toggle="popover" title="Email Addresses" data-placement="bottom" data-content="'+site.notifyDisplay+'">View Emails</button>'+
-						'</td>'+
-						'</tr>');
-			});	
-			$('[data-toggle="popover"]').popover();
-		}
-	});
-}
-
 function loadEvents() {
 	$.ajax({
 		url: "[[@{/service/eventchanges}]]",
@@ -313,7 +347,6 @@ function loadEvents() {
 		}
 	});
 }
-
 function editSite(id) {
 	if (id > 0) {
 		$.ajax({
