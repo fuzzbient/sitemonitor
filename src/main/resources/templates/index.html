@@ -31,7 +31,7 @@
 			      <th>&nbsp;</th>
 			      <th>Name</th>
 			      <th>State</th>
-			      <th>Resp</th>
+			      <th>Msec.</th>
 			      <th>Active</th>
 			      <th>Failures</th>
 			      <th>Assert</th>
@@ -213,8 +213,9 @@ $(document).ready(function(){
 			},
 			{ 
 			  "data": "responseTime",
+			  "type": "numeric",
 			  "render": function ( data, type, row, meta ) {
-				  return row.responseTime + '&nbsp;msec.';
+				  return row.responseTime; // + '&nbsp;msec.';
 			  }
 			},
 			{ 
