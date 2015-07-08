@@ -11,6 +11,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,13 @@ import sitemonitor.repository.Site;
 @Service
 public class SiteChecker {
 	private Log logger = LogFactory.getLog(getClass());
+	private static final RestTemplate restTemplate;
+	static {
+	    HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
+	    requestFactory.setReadTimeout(15 * 1000);
+	    requestFactory.setConnectTimeout(15 * 1000);
+	    restTemplate = new RestTemplate(requestFactory);
+	}
 	
 	@Async
 	public Future<Event> handleSiteCheck(Site site) throws Exception {
@@ -31,7 +39,7 @@ public class SiteChecker {
 		}
 
 		long start = System.currentTimeMillis();
-		RestTemplate restTemplate = new RestTemplate();
+		//RestTemplate restTemplate = new RestTemplate();
 		ClientHttpResponse response = null;
 		String status = null;
 		try {

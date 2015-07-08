@@ -24,10 +24,34 @@
 <script src="js/jqplot.cursor.min.js" th:src="@{/js/jqplot.cursor.min.js}"></script>
 <script src="js/jqplot.dateAxisRenderer.min.js" th:src="@{/js/jqplot.dateAxisRenderer.min.js}"></script>
 <script src="js/jqplot.highlighter.min.js" th:src="@{/js/jqplot.highlighter.min.js}"></script>
+<script src="js/js.cookie.js" th:src="@{/js/js.cookie.js}"></script>
 <script type="text/javascript">
+var autorefresh = 'OFF';
 $(document).ready(function(){
-	
+	setAutoRefresh();
+	window.setInterval(function() { 
+		if (autorefresh) {
+			window.location = '/sitemonitor/stats';
+		}
+	}, 60000);
 });
+function setAutoRefresh(state) {
+	if (!state || state == '') {
+		if (Cookies.get('autorefresh')) {
+			state = Cookies.get('autorefresh');
+		} else {
+			state = 'OFF';
+		}
+	}
+	autorefresh = state;
+	Cookies.set('autorefresh', state);
+	if (state == 'ON') {
+		$("#refreshsste").html("(ON)")
+	} else {
+		$("#refreshsste").html("(OFF)")
+	}
+	if (typeof console == "object") { console.log("autorefresh:" + autorefresh + ", cookie autorefresh:" + Cookies.get('autorefresh')); }
+}
 </script>
 </footer>
 
