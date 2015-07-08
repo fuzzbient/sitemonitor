@@ -171,6 +171,7 @@ $(document).ready(function(){
 	$('#example').DataTable({
 		//"paging": false,
 		"pageLength": 50,
+		stateSave: true,
 		"ajax":  {
 			"url": sitesAjaxUrl,
 			"dataSrc": "_embedded.sites"

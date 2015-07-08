@@ -26,14 +26,18 @@
 <script src="js/jqplot.highlighter.min.js" th:src="@{/js/jqplot.highlighter.min.js}"></script>
 <script src="js/js.cookie.js" th:src="@{/js/js.cookie.js}"></script>
 <script type="text/javascript">
+/*<![CDATA[*/
 var autorefresh = 'OFF';
+var secondsexpired = 60;
 $(document).ready(function(){
 	setAutoRefresh();
-	window.setInterval(function() { 
+	window.setInterval(function() {
 		if (autorefresh == 'ON') {
-			window.location = '/sitemonitor/stats';
+			secondsexpired = (secondsexpired - 15);
+			if (typeof console == "object") { console.log("Refresh in " + secondsexpired + " sec."); }
+			if (secondsexpired <= 0) { window.location = '/sitemonitor/stats'; }
 		}
-	}, 60000);
+	}, 15 * 1000);
 });
 function setAutoRefresh(state) {
 	if (!state || state == '') {
@@ -52,6 +56,7 @@ function setAutoRefresh(state) {
 	}
 	if (typeof console == "object") { console.log("autorefresh:" + autorefresh + ", cookie autorefresh:" + Cookies.get('autorefresh')); }
 }
+/*]]>*/
 </script>
 </footer>
 
