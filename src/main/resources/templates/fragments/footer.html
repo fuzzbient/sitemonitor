@@ -30,7 +30,7 @@ var autorefresh = 'OFF';
 $(document).ready(function(){
 	setAutoRefresh();
 	window.setInterval(function() { 
-		if (autorefresh) {
+		if (autorefresh == 'ON') {
 			window.location = '/sitemonitor/stats';
 		}
 	}, 60000);
