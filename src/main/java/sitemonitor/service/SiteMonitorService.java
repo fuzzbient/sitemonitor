@@ -29,6 +29,8 @@ import sitemonitor.security.provider.XTrustProvider;
 public class SiteMonitorService {
 	private Log logger = LogFactory.getLog(getClass());
 	
+	public static int PURGE_AGE_HOURS = 24 * 90;
+	
 	@Autowired
 	private SiteChecker siteChecker;
 	@Autowired
@@ -98,14 +100,15 @@ public class SiteMonitorService {
 		}
 		int purgeCount = 0;
 		for (Event event : eventRepository.findAll()) {
-			if (new DateTime(event.getEventTime()).isBefore(new DateTime().minusHours(24))) {
+			//
+			if (new DateTime(event.getEventTime()).isBefore(new DateTime().minusHours(PURGE_AGE_HOURS))) {
 				purgeCount++;
 			}
 		}
 		if (logger.isDebugEnabled()) {
 			logger.debug("SiteMonitorService.monitorSites() Events remaining to purge [" + purgeCount + "]...");
 		}
-		eventRepository.deleteEventsOlderThan(new DateTime().minusHours(24).toDate());
+		eventRepository.deleteEventsOlderThan(new DateTime().minusHours(PURGE_AGE_HOURS).toDate());
 		if (logger.isDebugEnabled()) {
 			logger.debug("SiteMonitorService.purgeOldEvents() Completed. Count of Events purged [" + purgeCount + "]");
 		}
