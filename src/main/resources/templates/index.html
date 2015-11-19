@@ -271,7 +271,13 @@ function graphAll() {
 		$('#graphdialog').on('shown.bs.modal', function (e) {
 			$.ajax({
 				url: "[[@{/service/chartalldata}]]",
-				success: function(json){ plotGraph(json.data, json.labels); }
+				success: function(json) { 
+					if (typeof console == "object") { console.log("graphAll() Plotting graph..."); }
+					plotGraph(json.data, json.labels); 
+				},
+				error: function() {
+					if (typeof console == "object") { console.log("graphAll() Error!"); }
+			    }
 			});
 		});
 	} catch (err) { if (typeof console == "object") { console.log(err); } }

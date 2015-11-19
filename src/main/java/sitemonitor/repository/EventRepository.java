@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 public interface EventRepository extends PagingAndSortingRepository<Event, Long> {
 
 	List<Event> findBySite(@Param("site") Site site, Sort sort);
+	List<Event> findBySiteAndEventTimeBetween(@Param("site") Site site, @Param("start") Date start, @Param("end") Date end, Sort sort);
 	List<Event> findByStatusChange(String statusChange, Sort sort);
 	
 	@Modifying

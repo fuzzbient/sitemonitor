@@ -1,12 +1,15 @@
 package sitemonitor.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -96,7 +99,8 @@ public class MonitorController {
 		labels.put("label", site.getName()); 
 		labels.put("showMarker", Boolean.FALSE); 
 		
-		List<Event> events = eventRepository.findBySite(site, new Sort(Sort.Direction.ASC, "eventTime"));
+		DateTime start = new DateTime().minusDays(3);
+		List<Event> events = eventRepository.findBySiteAndEventTimeBetween(site, start.toDate(), new Date(), new Sort(Sort.Direction.ASC, "eventTime"));
 		String[][][] data = new String[1][events.size()][2];
 		for (int i = 0; i < events.size(); i++) {
 			Event event = events.get(i);
@@ -119,6 +123,18 @@ public class MonitorController {
 		List<Site> sites = Lists.newArrayList(siteRepository.findAll());
 		List<Map<String,Object>> labels = new ArrayList<Map<String,Object>>();
 		
+		Map<String,List<Event>> eventsMap = new HashMap<String,List<Event>>();
+		for (Iterator<Site> iter = sites.iterator(); iter.hasNext();) {
+			Site site = iter.next();
+			DateTime start = new DateTime().minusHours(2);
+			List<Event> events = eventRepository.findBySiteAndEventTimeBetween(site, start.toDate(), new Date(), new Sort(Sort.Direction.ASC, "eventTime"));
+			if (events.size() == 0) {
+				iter.remove();
+			} else {
+				eventsMap.put(site.getIdentity(), events);
+			}
+		}
+		
 		String[][][] data = new String[sites.size()][][];
 		int s = 0;
 		for (Site site : sites) {
@@ -127,7 +143,8 @@ public class MonitorController {
 			label.put("showMarker", Boolean.FALSE); 
 			labels.add(label);
 			
-			List<Event> events = eventRepository.findBySite(site, new Sort(Sort.Direction.ASC, "eventTime"));
+			List<Event> events = eventsMap.get(site.getIdentity());
+			
 			data[s] = new String[events.size()][2];
 			for (int i = 0; i < events.size(); i++) {
 				Event event = events.get(i);
@@ -140,6 +157,10 @@ public class MonitorController {
 		Map<String,Object> result = new HashMap<String,Object>();
 		result.put("labels", Lists.newArrayList(labels));
 		result.put("data", data);
+
+		if (logger.isDebugEnabled()) {
+			logger.debug("MonitorController.chartData() returning " + data);
+		}
 
 		return result;
 	}
