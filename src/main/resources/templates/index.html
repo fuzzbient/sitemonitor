@@ -35,16 +35,16 @@
 			      <th>Active</th>
 			      <th>Failures</th>
 			      <th>Assert</th>
-			      <th>Notification</th>
+			      <th>Email</th>
 			    </tr>
 			  </thead>
 			</table>
 			
 			<div class="btn-group" role="group">
-			<a href="" onclick="editSite(-1);return false;" class="btn btn-primary">Add New Site</a>
-			<a href="" onclick="purgeEvents();return false;" class="btn btn-danger">Purge All Events</a>
-			<a href="" onclick="graphAll();return false;" class="btn btn-info">Graph All</a>
-			<a href="" t:href="@{/stats}" class="btn btn-success">Refresh Page</a>
+			<a href="" onclick="editSite(-1);return false;" class="btn btn-primary" title="New Site" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-plus"></span></a>
+			<a href="" onclick="purgeEvents();return false;" class="btn btn-danger" title="Purge Events" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-trash"></span></a>
+			<a href="" onclick="graphAll();return false;" class="btn btn-info" title="Graph All" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-signal"></span></a>
+			<a href="" t:href="@{/stats}" class="btn btn-success" title="Refresh" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-refresh"></span></a>
 			</div>
 			</div>
 		</div>
@@ -58,13 +58,10 @@
 			      <th>Site</th>
 			      <th>Date/Time</th>
 			      <th>State</th>
-			      <th>Resp (msec)</th>
+			      <th>Msec.</th>
 			      <th>Event Time</th>
 			    </tr>
 			  </thead>
-			  <!-- 
-			  <tbody id="eventstbody"></tbody>
-			  -->
 			</table>
 			</div>
 		</div>
@@ -191,10 +188,10 @@ $(document).ready(function(){
 			{ 
 			   "data": "identity",
 			   "render": function ( data, type, row, meta ) {
-				   return '<div class="btn-group" role="group" style="width:160px;">'+
-					'<a href="" onclick="editSite('+data+');return false;" class="btn btn-sm btn-primary">Edit</a>'+ 
-					'<a href="" onclick="graphSite('+data+');return false;" class="btn btn-sm btn-info">Graph</a>'+ 
-					'<a href="" onclick="deleteSite('+data+');return false;" class="btn btn-sm btn-danger">Delete</a>'+
+				   return '<div class="btn-group" role="group" style="width:110px;">'+
+					'<a href="" onclick="editSite('+data+');return false;" class="btn btn-sm btn-primary" title="Edit" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-pencil"></span></a>'+ 
+					'<a href="" onclick="graphSite('+data+');return false;" class="btn btn-sm btn-info" title="Graph" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-signal"></span></a>'+ 
+					'<a href="" onclick="deleteSite('+data+');return false;" class="btn btn-sm btn-danger" title="Delete" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-trash"></span></a>'+
 					'</div>';
 			   }
 			},
@@ -220,7 +217,11 @@ $(document).ready(function(){
 			{ 
 			  "data": "active",
 			  "render": function ( data, type, row, meta) {
-				  return '<a href="" onclick="toggleActive('+row.identity+');return false;" class="btn btn-sm btn-default active-'+row.active+'">'+row.active+'</a>';
+				  if (row.active == 'YES') {
+					  return '<button type="button" onclick="toggleActive('+row.identity+');return false;" class="btn btn-sm btn-default active-'+row.active+'" title="Active" data-toggle="tooltip" data-placement="right"><span class="glyphicon glyphicon-play"></span></button>';
+				  } else {
+					  return '<button type="button" onclick="toggleActive('+row.identity+');return false;" class="btn btn-sm btn-default active-'+row.active+'" title="Inactive" data-toggle="tooltip" data-placement="right"><span class="glyphicon glyphicon-stop"></span></button>';
+				  }
 			  }
 			},
 			{ "data": "failCountDisplay" },
@@ -228,12 +229,13 @@ $(document).ready(function(){
 			{ 
 			  "data": "notify",
 			  "render": function ( data, type, row, meta ) {
-				  return '<button type="button" class="btn btn-sm btn-success" data-toggle="popover" title="Email Addresses" data-placement="bottom" data-content="'+row.notifyDisplay+'">View Emails</button>';
+				  return '<button type="button" class="btn btn-sm btn-success" data-toggle="popover" title="Email Addresses" data-placement="bottom" data-content="'+row.notifyDisplay+'" title="View Email Addresses"><span class="glyphicon glyphicon-envelope"></span></button>';
 			  }
 			}
 		],
 		"fnDrawCallback": function (oSettings) {
 			$('[data-toggle="popover"]').popover();
+			$('[data-toggle="tooltip"]').tooltip();
 	    }
 	}).order( [ 1, 'asc' ] );
 	
