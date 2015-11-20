@@ -158,10 +158,6 @@ public class MonitorController {
 		result.put("labels", Lists.newArrayList(labels));
 		result.put("data", data);
 
-		if (logger.isDebugEnabled()) {
-			logger.debug("MonitorController.chartData() returning " + data);
-		}
-
 		return result;
 	}
 
