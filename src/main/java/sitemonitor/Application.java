@@ -26,7 +26,7 @@ public class Application {
 	@Bean
 	public CacheManager cacheManager() {
 		GuavaCacheManager cacheManager = new GuavaCacheManager();
-		cacheManager.setCacheBuilder(CacheBuilder.newBuilder().expireAfterAccess(10, TimeUnit.MINUTES));
+		cacheManager.setCacheBuilder(CacheBuilder.newBuilder().expireAfterAccess(15, TimeUnit.MINUTES));
 		return cacheManager;
 	}     
 }
