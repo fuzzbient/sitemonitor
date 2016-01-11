@@ -21,14 +21,15 @@ import org.springframework.web.client.RestTemplate;
 import sitemonitor.repository.Event;
 import sitemonitor.repository.Site;
 
+
 @Service
 public class SiteChecker {
 	private Log logger = LogFactory.getLog(getClass());
 	private static final RestTemplate restTemplate;
 	static {
 	    HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-	    requestFactory.setReadTimeout(15 * 1000);
-	    requestFactory.setConnectTimeout(15 * 1000);
+	    requestFactory.setReadTimeout(5 * 1000);
+	    requestFactory.setConnectTimeout(5 * 1000);
 	    restTemplate = new RestTemplate(requestFactory);
 	}
 	
@@ -39,13 +40,13 @@ public class SiteChecker {
 		}
 
 		long start = System.currentTimeMillis();
-		//RestTemplate restTemplate = new RestTemplate();
 		ClientHttpResponse response = null;
 		String status = null;
 		try {
 			if (logger.isDebugEnabled()) {
 				logger.debug("SiteChecker.handleSiteCheck() site:" + site.getName() + ", " + site.getAssertText());
 			}
+			
 			ClientHttpRequest request = restTemplate.getRequestFactory().createRequest(new URI(site.getUrl()), HttpMethod.GET);
 			response = request.execute();
 			response.getStatusCode();
