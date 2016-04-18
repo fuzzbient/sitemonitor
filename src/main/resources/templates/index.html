@@ -159,18 +159,42 @@
 </div>
 
 <div th:replace="fragments/footer :: footer"></div>
+<div th:replace="fragments/footer :: workingdialog"></div>
 
 <script type="text/javascript" th:inline="text">
 /*<![CDATA[*/
 $(document).ready(function(){
+	loadEvents();
+	loadSites();
+	setInterval(function () {
+		$("span[class^='status-']").css('color','red');
+		$("span[class='status-OK']").css('color','green');
+	}, 500);
+	$.jqplot.config.enablePlugins = true;
+});
+function loadSites() {
+	if (typeof console == "object") { console.log("loadEvents()"); }
+	$('#workingdialog').modal('show');
+	try {
+		$.getJSON( "[[@{/sites(size=100,sort=name,name.dir=asc)}]]" , function( data ) {
+			json = [];
+			if (data._embedded && data._embedded.sites) {
+				json = data._embedded.sites;
+			}
+			buildSitesTable(json);
+			$('#workingdialog').modal('hide');
+		});
+	} catch (err) {
+		if (typeof console == "object") { console.log("loadEvents() error: " + err); }
+		$('#workingdialog').modal('hide');
+	}	
+}
+function buildSitesTable(json) {
 	$('#sitestable').DataTable({
 		//"paging": false,
 		"pageLength": 50,
 		stateSave: true,
-		"ajax":  {
-			"url": "[[@{/sites(size=100,sort=name,name.dir=asc)}]]",
-			"dataSrc": "_embedded.sites"
-		},
+		"aaData": json,
 		"columnDefs": [
 			{
 		      "orderable": false,
@@ -237,34 +261,40 @@ $(document).ready(function(){
 			$('[data-toggle="popover"]').popover();
 			$('[data-toggle="tooltip"]').tooltip();
 	    }
-	}).order( [ 1, 'asc' ] );
-	
-	loadEvents();
-	setInterval(function () {
-		$("span[class^='status-']").css('color','red');
-		$("span[class='status-OK']").css('color','green');
-	}, 500);
-	$.jqplot.config.enablePlugins = true;
-});
+	}).order( [ 1, 'asc' ] );	
+}
 function toggleActive(id) {
+	$('#workingdialog').modal('show');
 	$.ajax({
 		url: "[[@{/service/toggleactive/}]]" + id,
-		success: function(json){ window.location = '[[@{/stats}]]'; }
+		success: function(json){ 
+			window.location = '[[@{/stats}]]'; 
+		}
 	});
 }
 function graphSite(id) {
 	try {
+		$('#workingdialog').modal('show');
 		$("#chartdiv").html('<div style="padding:100px 450px;"><img src="images/ajax-loader.gif"/></div>');
 		$('#graphdialog').modal();
 		$('#graphdialog').on('shown.bs.modal', function (e) {
 			$.ajax({
 				url: "[[@{/service/chartdata/}]]" + id,
-				success: function(json){ plotGraph(json.data, json.labels); }
+				success: function(json){ 
+					plotGraph(json.data, json.labels); 
+					$('#workingdialog').modal('hide');
+				}
 			});
 		});
-	} catch (err) { if (typeof console == "object") { console.log(err); } }
+	} catch (err) { 
+		$('#workingdialog').modal('hide');
+		if (typeof console == "object") { 
+			console.log(err); 
+		} 
+	}
 }
 function graphAll() {
+	$('#workingdialog').modal('show');
 	try {
 		$("#chartdiv").html('<div style="padding:100px 450px;"><img src="images/ajax-loader.gif"/></div>');
 		$('#graphdialog').modal();
@@ -274,13 +304,18 @@ function graphAll() {
 				success: function(json) { 
 					if (typeof console == "object") { console.log("graphAll() Plotting graph..."); }
 					plotGraph(json.data, json.labels); 
+					$('#workingdialog').modal('hide');
 				},
 				error: function() {
+					$('#workingdialog').modal('hide');
 					if (typeof console == "object") { console.log("graphAll() Error!"); }
 			    }
 			});
 		});
-	} catch (err) { if (typeof console == "object") { console.log(err); } }
+	} catch (err) { 
+		$('#workingdialog').modal('hide');
+		if (typeof console == "object") { console.log(err); } 
+	}
 }
 // http://www.jqplot.com/docs/files/plugins/jqplot-dateAxisRenderer-js.html
 // http://www.jqplot.com/deploy/dist/examples/
@@ -338,13 +373,24 @@ function tooltipContentEditor(str, seriesIndex, pointIndex, plot) {
     return plot.series[seriesIndex]["label"] + ", " + plot.data[seriesIndex][pointIndex];
 }
 function loadEvents() {
+	if (typeof console == "object") { console.log("loadEvents()"); }
+	try {
+		$.getJSON( "[[@{/service/eventchanges}]]" , function( data ) {
+			json = [];
+			if (data) {
+				json = data;
+			}
+			buildEventsTable(json);
+		});
+	} catch (err) {
+		if (typeof console == "object") { console.log("loadEvents() error: " + err); }
+	}	
+}
+function buildEventsTable(json) {
 	var table = $('#eventstable').DataTable({
 		"pageLength": 50,
 		stateSave: true,
-		"ajax":  {
-			"url": "[[@{/service/eventchanges}]]",
-			"dataSrc": ""
-		},	
+		"aaData": json,
 		"columns": [
 			{ 
 				"data": "siteName",
@@ -402,6 +448,9 @@ function editSite(id) {
 	$('#siteForm').modal();
 }
 function saveSite() {
+	$('#siteForm').modal('hide');
+	$('#workingdialog').modal('show');
+	
 	id = $("#site-id").val();
 	name = $("#site-name").val();
 	url = $("#site-url").val();
@@ -450,6 +499,7 @@ function saveSite() {
 	    		console.log("textStatus:" + textStatus); 
 	    		console.log("errorThrown:" + errorThrown); 
 	    	}
+	    	$('#workingdialog').modal('hide');
 	        alert("Status: " + textStatus + "\nError: " + errorThrown); 
 	    }
 	});	
@@ -462,6 +512,8 @@ function deleteSite(id) {
 function handleDeleteSite() {	
 	id = deleteid;
 	if (id > 0) {
+		$("#confirmdeletesitedialog").modal('hide');
+		$('#workingdialog').modal('show');
 		$.ajax({
 			headers: { 
 		        'Accept': 'application/json',
@@ -478,12 +530,14 @@ function handleDeleteSite() {
 		    		console.log("textStatus:" + textStatus); 
 		    		console.log("errorThrown:" + errorThrown); 
 		    	}
+		    	$('#workingdialog').modal('hide');
 		    	alert("Status: " + textStatus + "\nError: " + errorThrown); 
 		    }
 		});
 	}	
 }
 function purgeEvents() {
+	$('#workingdialog').modal('show');
 	$.ajax({
 		headers: { 
 	        'Accept': 'application/json',
@@ -500,6 +554,7 @@ function purgeEvents() {
 	    		console.log("textStatus:" + textStatus); 
 	    		console.log("errorThrown:" + errorThrown); 
 	    	}
+	    	$('#workingdialog').modal('hide');
 	    	alert("Status: " + textStatus + "\nError: " + errorThrown); 
 	    }
 	});	

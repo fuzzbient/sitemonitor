@@ -7,7 +7,7 @@ import java.util.concurrent.Future;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.joda.time.DateTime;
@@ -100,7 +100,6 @@ public class SiteMonitorService {
 		}
 		int purgeCount = 0;
 		for (Event event : eventRepository.findAll()) {
-			//
 			if (new DateTime(event.getEventTime()).isBefore(new DateTime().minusHours(PURGE_AGE_HOURS))) {
 				purgeCount++;
 			}

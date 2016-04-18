@@ -60,5 +60,18 @@ function setAutoRefresh(state) {
 </script>
 </footer>
 
+<div id="workingdialog" class="modal fade" th:fragment="workingdialog">
+<div class="modal-dialog">
+<div class="modal-content">
+  <div class="modal-body">
+    <div style="padding:50px;text-align:center;">
+    <h4 class="modal-title">Working, please wait...</h4>
+    <img src="images/ajax-loader.gif" th:src="@{/images/ajax-loader.gif}" alt="loading..." />
+    </div>
+  </div>
+</div>
+</div>
+</div>
+
 </body>
 </html>
