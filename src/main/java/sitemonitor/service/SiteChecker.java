@@ -4,9 +4,14 @@ import java.net.URI;
 import java.util.Date;
 import java.util.concurrent.Future;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
@@ -25,12 +30,16 @@ import sitemonitor.repository.Site;
 @Service
 public class SiteChecker {
 	private Log logger = LogFactory.getLog(getClass());
-	private static final RestTemplate restTemplate;
-	static {
-	    HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-	    requestFactory.setReadTimeout(5 * 1000);
-	    requestFactory.setConnectTimeout(5 * 1000);
-	    restTemplate = new RestTemplate(requestFactory);
+	private RestTemplate restTemplate;
+	
+	@PostConstruct
+	public void init() {
+		CloseableHttpClient client = HttpClients.custom().setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE).build();
+		HttpComponentsClientHttpRequestFactory httpClientFactory = new HttpComponentsClientHttpRequestFactory();
+		httpClientFactory.setReadTimeout(5 * 1000);
+		httpClientFactory.setConnectTimeout(5 * 1000);
+		httpClientFactory.setHttpClient(client);
+		this.restTemplate = new RestTemplate(httpClientFactory);
 	}
 	
 	@Async
