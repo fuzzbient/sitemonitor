@@ -29,7 +29,7 @@ import sitemonitor.security.provider.XTrustProvider;
 public class SiteMonitorService {
 	private Log logger = LogFactory.getLog(getClass());
 	
-	public static int PURGE_AGE_HOURS = 24 * 90;
+	public static int PURGE_AGE_HOURS = 24 * 7;
 	
 	@Autowired
 	private SiteChecker siteChecker;
@@ -87,14 +87,12 @@ public class SiteMonitorService {
 			eventRepository.save(event);
 		}
 		
-		purgeOldEvents();
-		
 		if (logger.isDebugEnabled()) {
 			logger.debug("SiteMonitorService.monitorSites() Done.");
 		}
 	}
 	
-	private void purgeOldEvents() {
+	public void purgeOldEvents() {
 		if (logger.isDebugEnabled()) {
 			logger.debug("SiteMonitorService.purgeOldEvents()");
 		}
