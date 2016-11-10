@@ -9,9 +9,19 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.cookie.CookieOrigin;
+import org.apache.http.cookie.CookieSpec;
+import org.apache.http.cookie.CookieSpecProvider;
+import org.apache.http.cookie.MalformedCookieException;
+import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.cookie.DefaultCookieSpec;
+import org.apache.http.protocol.HttpContext;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
@@ -34,11 +44,40 @@ public class SiteChecker {
 	
 	@PostConstruct
 	public void init() {
-		CloseableHttpClient client = HttpClients.custom().setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE).build();
+		class EasyCookieSpec extends DefaultCookieSpec {
+			@Override
+			public void validate(org.apache.http.cookie.Cookie cookie, CookieOrigin origin)
+					throws MalformedCookieException {
+		        //allow all cookies 
+			}
+		}
+		class EasySpecProvider implements CookieSpecProvider {
+		    @Override
+		    public CookieSpec create(HttpContext context) {
+		        return new EasyCookieSpec();
+		    }
+		}
+
+		Registry<CookieSpecProvider> registryCookieSpec = RegistryBuilder.<CookieSpecProvider>create()
+		            .register("easy", new EasySpecProvider())
+		            .build();
+
+		RequestConfig requestConfig = RequestConfig.custom()
+		            .setCookieSpec("easy")
+		            .build();
+		
+		CloseableHttpClient client = HttpClients.custom()
+				.setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+				.setDefaultCookieStore(new BasicCookieStore())
+				.setDefaultCookieSpecRegistry(registryCookieSpec)
+				.setDefaultRequestConfig(requestConfig)
+				.build();
+		
 		HttpComponentsClientHttpRequestFactory httpClientFactory = new HttpComponentsClientHttpRequestFactory();
 		httpClientFactory.setReadTimeout(5 * 1000);
 		httpClientFactory.setConnectTimeout(5 * 1000);
 		httpClientFactory.setHttpClient(client);
+		
 		this.restTemplate = new RestTemplate(httpClientFactory);
 	}
 	
