@@ -1,6 +1,8 @@
 package sitemonitor.service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Future;
 
@@ -14,6 +16,7 @@ import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
@@ -37,19 +40,54 @@ public class SiteMonitorService {
 	private SiteRepository siteRepository;
 	@Autowired
 	private EventRepository eventRepository;
-	@Autowired
-	private JavaMailSender mailSender;
-	@Autowired
+
 	private SpringTemplateEngine templateEngine;
+	private JavaMailSender mailSender;
 	
 	@Value("${sitemonitor.mail.from}")
 	private String from;
 	
-	public SiteMonitorService() {
+	@Autowired
+	public SiteMonitorService(
+			JavaMailSender mailSender, 
+			SpringTemplateEngine templateEngine) {
 		if (logger.isDebugEnabled()) {
 			logger.debug("SiteMonitorService() Loading XTrustProvider...");
 		}		
 		XTrustProvider.install();
+		
+		this.mailSender = mailSender;
+		this.templateEngine = templateEngine;
+		this.from = System.getProperty("sitemonitor.mail.from");
+		sendTestNotification();
+	}
+	
+	private void sendTestNotification() {
+		if (logger.isInfoEnabled()) {
+			logger.info("SiteMonitorService.sendTestNotification() Loading XTrustProvider...");
+		}		
+		JavaMailSenderImpl sender = (JavaMailSenderImpl) mailSender;
+		if (logger.isInfoEnabled()) {
+			logger.info("SiteMonitorService.sendTestNotification() MailSender host: [" + sender.getHost() + "]");
+		}		
+		try {
+			final Context ctx = new Context();
+			ctx.setVariable("timestamp", new SimpleDateFormat("MM/dd/YYYY hh:mm:ss aa").format(new Date()));
+			ctx.setVariable("statusDescription", "SiteMonitor Up");
+			ctx.setVariable("status", "OK");
+			String body = templateEngine.process("notification", ctx);
+			
+			MimeMessage message = mailSender.createMimeMessage();
+			MimeMessageHelper helper = new MimeMessageHelper(message, true);
+			helper.setTo(from);
+			helper.setFrom(new InternetAddress(from));
+			helper.setReplyTo(from);
+			helper.setSubject("SiteMonitor Up");
+			helper.setText(body, true);
+			sender.send(message);
+		} catch (Exception e) {
+			logger.error("SiteMonitorService.sendTestNotification() startup error, from: [" + from + "], host: [" + sender.getHost() + "]", e);
+		}
 	}
 	
 	public void monitorSites() throws Exception {
