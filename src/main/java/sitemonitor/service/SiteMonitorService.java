@@ -111,13 +111,21 @@ public class SiteMonitorService {
 		for (Future<Event> task : tasks) {
 			Event event = task.get();
 			Site site = siteRepository.findOne(event.getSite().getId());
-			if (!"OK".equals(site.getStatus()) && 
-					site.getFailures() == site.getFailureLimit() &&
-				"YES".equalsIgnoreCase(site.getActive())) {
+			if (
+					"YES".equalsIgnoreCase(site.getActive()) &&
+					!"OK".equals(site.getStatus()) && 
+					site.getFailures() >= site.getFailureLimit() &&
+					!"FAIL".equals(site.getLastNotification())
+				) {
 				sendAlerts(event, site.getStatus());
 				site.setLastNotification("FAIL");
 				siteRepository.save(site);
-			} else if ("OK".equals(site.getStatus()) && "Y".equals(event.getStatusChange()) && "FAIL".equals(site.getLastNotification())) {
+			} else if (
+					"YES".equalsIgnoreCase(site.getActive()) &&
+					"OK".equals(site.getStatus()) && 
+					"Y".equals(event.getStatusChange()) && 
+					"FAIL".equals(site.getLastNotification())
+					) {
 				sendAlerts(event, "OK");
 				site.setLastNotification("OK");
 				siteRepository.save(site);
