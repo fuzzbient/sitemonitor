@@ -164,6 +164,7 @@
 <script type="text/javascript" th:inline="text">
 /*<![CDATA[*/
 $(document).ready(function(){
+	$.ajaxSetup({ cache: false });
 	loadEvents();
 	loadSites();
 	setInterval(function () {
