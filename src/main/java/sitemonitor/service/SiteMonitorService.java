@@ -106,7 +106,18 @@ public class SiteMonitorService {
 			try { Thread.sleep(10); } catch (Exception e) { }
 		}
 		
-		siteRepository.save(sites);
+		for (Site site : sites) {
+			Site entity = siteRepository.findOne(site.getId());
+			if (entity != null) {
+				entity.setResponseTime(site.getResponseTime());
+				entity.setStatus(site.getStatus());
+				entity.setFailures(site.getFailures());
+				if (logger.isDebugEnabled()) {
+					logger.debug("SiteMonitorService.monitorSites() saving site [" + entity.getName() + "] status...");
+				}
+				siteRepository.save(entity);
+			}
+		}
 		
 		for (Future<Event> task : tasks) {
 			Event event = task.get();
