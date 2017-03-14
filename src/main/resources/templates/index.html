@@ -29,7 +29,7 @@
 			  <thead>
 			    <tr>
 			      <th>&nbsp;</th>
-			      <th>Name</th>
+			      <th style="min-width:150px;">Site</th>
 			      <th>State</th>
 			      <th>Msec.</th>
 			      <th>Active</th>
@@ -55,11 +55,10 @@
 			<table id="eventstable" class="table table-condensed" cellspacing="0" width="100%">
 			  <thead>
 			    <tr>
-			      <th>Site</th>
+			      <th style="min-width:150px;">Site</th>
 			      <th>Date/Time</th>
 			      <th>State</th>
 			      <th>Msec.</th>
-			      <th>Event Time</th>
 			    </tr>
 			  </thead>
 			</table>
@@ -194,6 +193,7 @@ function buildSitesTable(json) {
 	$('#sitestable').DataTable({
 		//"paging": false,
 		"pageLength": 50,
+		"order": [[ 1, "asc" ]],
 		stateSave: true,
 		"aaData": json,
 		"columnDefs": [
@@ -262,7 +262,7 @@ function buildSitesTable(json) {
 			$('[data-toggle="popover"]').popover();
 			$('[data-toggle="tooltip"]').tooltip();
 	    }
-	}).order( [ 1, 'asc' ] );	
+	});	
 }
 function toggleActive(id) {
 	$('#workingdialog').modal('show');
@@ -390,6 +390,7 @@ function loadEvents() {
 function buildEventsTable(json) {
 	var table = $('#eventstable').DataTable({
 		"pageLength": 50,
+		"order": [[ 1, "desc" ]],
 		stateSave: true,
 		"aaData": json,
 		"columns": [
@@ -411,11 +412,9 @@ function buildEventsTable(json) {
 					return '<span class="status-'+row.state+'">'+row.state+'</span>';
 				}
 			},
-			{ "data": "responseTime" },
-			{ "data": "eventTime" }
+			{ "data": "responseTime" }
 		]
-	}).order( [ 4, 'desc' ] );	
-	table.column( 4 ).visible( false );
+	});	
 }
 function editSite(id) {
 	if (id > 0) {
