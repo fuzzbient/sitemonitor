@@ -189,81 +189,7 @@ function loadSites() {
 		$('#workingdialog').modal('hide');
 	}	
 }
-function buildSitesTable(json) {
-	$('#sitestable').DataTable({
-		//"paging": false,
-		"pageLength": 50,
-		"order": [[ 1, "asc" ]],
-		stateSave: true,
-		"aaData": json,
-		"columnDefs": [
-			{
-		      "orderable": false,
-		      "targets": 0
-			},
-			{
-			  "cellType": "th",
-			  "createdCell": function (td, cellData, rowData, row, col) {
-				  $(td).prop('scope', 'row')
-			  },
-			  "targets": 1
-			}
-		],
-		"columns": [
-			{ 
-			   "data": "identity",
-			   "render": function ( data, type, row, meta ) {
-				   return '<div class="btn-group" role="group" style="width:110px;">'+
-					'<a href="" onclick="editSite('+data+');return false;" class="btn btn-sm btn-primary" title="Edit" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-pencil"></span></a>'+ 
-					'<a href="" onclick="graphSite('+data+');return false;" class="btn btn-sm btn-info" title="Graph" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-signal"></span></a>'+ 
-					'<a href="" onclick="deleteSite('+data+');return false;" class="btn btn-sm btn-danger" title="Delete" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-trash"></span></a>'+
-					'</div>';
-			   }
-			},
-			{ 
-			  "data": "name",
-			  "render": function ( data, type, row, meta ) {
-				  return '<a href="'+row.url+'" target="_blank" style="color:#444;text-decoration:none;">'+row.name+'</a>';
-			  }
-			},
-			{ 
-			  "data": "status",
-			  "render": function ( data, type, row, meta ) {
-				  return '<span class="status-'+row.status+'">'+row.status+'</span>';
-			  }
-			},
-			{ 
-			  "data": "responseTime",
-			  "type": "numeric",
-			  "render": function ( data, type, row, meta ) {
-				  return row.responseTime; // + '&nbsp;msec.';
-			  }
-			},
-			{ 
-			  "data": "active",
-			  "render": function ( data, type, row, meta) {
-				  if (row.active == 'YES') {
-					  return '<button type="button" onclick="toggleActive('+row.identity+');return false;" class="btn btn-sm btn-default active-'+row.active+'" title="Active" data-toggle="tooltip" data-placement="right"><span class="glyphicon glyphicon-play"></span></button>';
-				  } else {
-					  return '<button type="button" onclick="toggleActive('+row.identity+');return false;" class="btn btn-sm btn-default active-'+row.active+'" title="Inactive" data-toggle="tooltip" data-placement="right"><span class="glyphicon glyphicon-stop"></span></button>';
-				  }
-			  }
-			},
-			{ "data": "failCountDisplay" },
-			{ "data": "assertText" },
-			{ 
-			  "data": "notify",
-			  "render": function ( data, type, row, meta ) {
-				  return '<button type="button" class="btn btn-sm btn-success" data-toggle="popover" title="Email Addresses" data-placement="bottom" data-content="'+row.notifyDisplay+'" title="View Email Addresses"><span class="glyphicon glyphicon-envelope"></span></button>';
-			  }
-			}
-		],
-		"fnDrawCallback": function (oSettings) {
-			$('[data-toggle="popover"]').popover();
-			$('[data-toggle="tooltip"]').tooltip();
-	    }
-	});	
-}
+
 function toggleActive(id) {
 	$('#workingdialog').modal('show');
 	$.ajax({
@@ -386,35 +312,6 @@ function loadEvents() {
 	} catch (err) {
 		if (typeof console == "object") { console.log("loadEvents() error: " + err); }
 	}	
-}
-function buildEventsTable(json) {
-	var table = $('#eventstable').DataTable({
-		"pageLength": 50,
-		"order": [[ 1, "desc" ]],
-		stateSave: true,
-		"aaData": json,
-		"columns": [
-			{ 
-				"data": "siteName",
-				"render": function ( data, type, row, meta ) {
-					return '<a href="'+row.site.url+'" target="_blank" style="color:#444;text-decoration:none;font-weight:bold;">'+row.siteName+'</a>';
-				}
-			},
-			{ 
-				"data": "eventTimeDisplay", 
-				"render": function ( data, type, row, meta ) {
-					return '<div style=\"white-space:nowrap;\">'+row.eventTimeDisplay+'</div>';
-				}
-			},
-			{ 
-				"data": "state",
-				"render": function ( data, type, row, meta ) {
-					return '<span class="status-'+row.state+'">'+row.state+'</span>';
-				}
-			},
-			{ "data": "responseTime" }
-		]
-	});	
 }
 function editSite(id) {
 	if (id > 0) {
@@ -560,7 +457,113 @@ function purgeEvents() {
 	});	
 }
 /*]]>*/
-</script>	
-
+</script>
+<script type="text/javascript" th:inline="none">
+/*<![CDATA[*/	
+function buildSitesTable(json) {
+	$('#sitestable').DataTable({
+		"pageLength": 50,
+		"order": [[ 1, "desc" ]],
+		stateSave: true,
+		"aaData": json,
+		"columnDefs": [
+			{
+		      "orderable": false,
+		      "targets": 0
+			},
+			{
+			  "cellType": "th",
+			  "createdCell": function (td, cellData, rowData, row, col) {
+				  $(td).prop('scope', 'row')
+			  },
+			  "targets": 1 
+			}
+		],
+		"columns": [
+			{ 
+			   "data": "identity",
+			   "render": function ( data, type, row, meta ) {
+				   return '<div class="btn-group" role="group" style="width:110px;">'+
+					'<a href="" onclick="editSite('+data+');return false;" class="btn btn-sm btn-primary" title="Edit" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-pencil"></span></a>'+ 
+					'<a href="" onclick="graphSite('+data+');return false;" class="btn btn-sm btn-info" title="Graph" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-signal"></span></a>'+ 
+					'<a href="" onclick="deleteSite('+data+');return false;" class="btn btn-sm btn-danger" title="Delete" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-trash"></span></a>'+
+					'</div>';
+			   }
+			},
+			{ 
+			  "data": "name",
+			  "render": function ( data, type, row, meta ) {
+				  return '<a href="'+row.url+'" target="_blank" style="color:#444;text-decoration:none;">'+row.name+'</a>';
+			  }
+			},
+			{ 
+			  "data": "status",
+			  "render": function ( data, type, row, meta ) {
+				  return '<span class="status-'+row.status+'">'+row.status+'</span>';
+			  }
+			},
+			{ 
+			  "data": "responseTime",
+			  "type": "numeric",
+			  "render": function ( data, type, row, meta ) {
+				  return row.responseTime; // + '&nbsp;msec.';
+			  }
+			},
+			{ 
+			  "data": "active",
+			  "render": function ( data, type, row, meta) {
+				  if (row.active == 'YES') {
+					  return '<button type="button" onclick="toggleActive('+row.identity+');return false;" class="btn btn-sm btn-default active-'+row.active+'" title="Active" data-toggle="tooltip" data-placement="right"><span class="glyphicon glyphicon-play"></span></button>';
+				  } else {
+					  return '<button type="button" onclick="toggleActive('+row.identity+');return false;" class="btn btn-sm btn-default active-'+row.active+'" title="Inactive" data-toggle="tooltip" data-placement="right"><span class="glyphicon glyphicon-stop"></span></button>';
+				  }
+			  }
+			},
+			{ "data": "failCountDisplay" },
+			{ "data": "assertText" },
+			{ 
+			  "data": "notify",
+			  "render": function ( data, type, row, meta ) {
+				  return '<button type="button" class="btn btn-sm btn-success" data-toggle="popover" title="Email Addresses" data-placement="bottom" data-content="'+row.notifyDisplay+'" title="View Email Addresses"><span class="glyphicon glyphicon-envelope"></span></button>';
+			  }
+			}
+		],
+		"fnDrawCallback": function (oSettings) {
+			$('[data-toggle="popover"]').popover();
+			$('[data-toggle="tooltip"]').tooltip();
+	    }
+	});	
+}           
+function buildEventsTable(json) {
+	var table = $('#eventstable').DataTable({
+		"pageLength": 50,
+		"order": [[ 1, "desc" ]],
+		stateSave: true,
+		"aaData": json,
+		"columns": [
+			{ 
+				"data": "siteName",
+				"render": function ( data, type, row, meta ) {
+					return '<a href="'+row.site.url+'" target="_blank" style="color:#444;text-decoration:none;font-weight:bold;">'+row.siteName+'</a>';
+				}
+			},
+			{ 
+				"data": "eventTimeDisplay", 
+				"render": function ( data, type, row, meta ) {
+					return '<div style=\"white-space:nowrap;\">'+row.eventTimeDisplay+'</div>';
+				}
+			},
+			{ 
+				"data": "state",
+				"render": function ( data, type, row, meta ) {
+					return '<span class="status-'+row.state+'">'+row.state+'</span>';
+				}
+			},
+			{ "data": "responseTime" }
+		]
+	});	
+}
+/*]]>*/
+</script>
 </body>
 </html>
