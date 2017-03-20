@@ -1,7 +1,6 @@
 package sitemonitor.repository;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -10,6 +9,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 
 @Entity
 public class Event implements Serializable {
@@ -39,13 +41,11 @@ public class Event implements Serializable {
 	}
 	
 	public String getEventTimeDisplay() {
-		SimpleDateFormat df = new SimpleDateFormat("YYYY-MM-dd hh:mm:ssaa");
-		return df.format(eventTime);
+		return DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").print(new DateTime(eventTime));
 	}
 
 	public String getChartTimeDisplay() {
-		SimpleDateFormat df = new SimpleDateFormat("YYYY-MM-dd hh:mm:ssaa");
-		return df.format(eventTime);
+		return DateTimeFormat.forPattern("yyyy-MM-dd hh:mm:ssaa").print(new DateTime(eventTime));
 	}
 
 	public long getId() {
