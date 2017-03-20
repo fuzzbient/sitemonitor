@@ -465,7 +465,7 @@ function purgeEvents() {
 function buildSitesTable(json) {
 	$('#sitestable').DataTable({
 		"pageLength": 50,
-		"order": [[ 1, "desc" ]],
+		"order": [[ 1, "asc" ]],
 		stateSave: true,
 		"aaData": json,
 		"columnDefs": [
