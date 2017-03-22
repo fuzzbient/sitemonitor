@@ -39,6 +39,7 @@ import sitemonitor.repository.Site;
 
 @Service
 public class SiteChecker {
+	public static final int REQUEST_TIMEOUT_SECONDS = 10;
 	private Log logger = LogFactory.getLog(getClass());
 	private RestTemplate restTemplate;
 	
@@ -74,8 +75,8 @@ public class SiteChecker {
 				.build();
 		
 		HttpComponentsClientHttpRequestFactory httpClientFactory = new HttpComponentsClientHttpRequestFactory();
-		httpClientFactory.setReadTimeout(5 * 1000);
-		httpClientFactory.setConnectTimeout(5 * 1000);
+		httpClientFactory.setReadTimeout(REQUEST_TIMEOUT_SECONDS * 1000);
+		httpClientFactory.setConnectTimeout(REQUEST_TIMEOUT_SECONDS * 1000);
 		httpClientFactory.setHttpClient(client);
 		
 		this.restTemplate = new RestTemplate(httpClientFactory);
