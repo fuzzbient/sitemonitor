@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -30,6 +31,7 @@ public class Site implements Serializable {
 	private String assertText;
 	private long failures;
 	private long failureLimit;
+	@Column(length = 4096)
 	private String notify;
 	private String lastNotification;
 	
