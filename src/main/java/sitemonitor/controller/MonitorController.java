@@ -78,7 +78,7 @@ public class MonitorController {
 			logger.debug("MonitorController.toggleActive(" + id + ")");
 		}
 		
-		Site site = siteRepository.findOne(id);
+		Site site = siteRepository.getById(id);
 		site.toggleActive();
 		siteRepository.save(site);
 		
@@ -94,7 +94,7 @@ public class MonitorController {
 			logger.debug("MonitorController.chartData(" + id + ")");
 		}
 		
-		Site site = siteRepository.findOne(id);
+		Site site = siteRepository.getById(id);
 		Map<String,Object> labels = new HashMap<String,Object>();
 		labels.put("label", site.getName()); 
 		labels.put("showMarker", Boolean.FALSE); 

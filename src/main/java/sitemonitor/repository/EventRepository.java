@@ -16,33 +16,35 @@ import org.springframework.transaction.annotation.Transactional;
 @RepositoryRestResource(collectionResourceRel = "events", path = "events")
 public interface EventRepository extends PagingAndSortingRepository<Event, Long> {
 
-	@Cacheable("event-findAll")
+	@Override
+	@Cacheable("events")
 	Iterable<Event> findAll(Sort sort);
 	
-	@Cacheable("event-findBySite")
+	@Cacheable("event")
 	List<Event> findBySite(@Param("site") Site site, Sort sort);
 	
-	@Cacheable("event-findBySiteAndEventTimeBetween")
+	@Cacheable("event")
 	List<Event> findBySiteAndEventTimeBetween(@Param("site") Site site, @Param("start") Date start, @Param("end") Date end, Sort sort);
 	
-	@Cacheable("event-findByStatusChange")
+	@Cacheable("event")
 	List<Event> findByStatusChange(String statusChange, Sort sort);
 	
 	@Modifying
 	@Transactional
-	@CacheEvict(value = { "event-findAll", "event-findBySite", "event-findBySiteAndEventTimeBetween", "event-findByStatusChange" }, allEntries = true)
+	@CacheEvict(value = { "event","events" }, allEntries = true)
 	@Query("delete from Event e where e.eventTime < ?1")
 	void deleteEventsOlderThan(Date date);
 	
 	@Override
-	@CacheEvict(value = { "event-findAll", "event-findBySite", "event-findBySiteAndEventTimeBetween", "event-findByStatusChange" }, allEntries = true)
+	@CacheEvict(value = { "event","events" }, allEntries = true)
 	public <S extends Event> S save(S entity);
 	
 	@Override
-	@CacheEvict(value = { "event-findAll", "event-findBySite", "event-findBySiteAndEventTimeBetween", "event-findByStatusChange" }, allEntries = true)
+	@CacheEvict(value = { "event","events" }, allEntries = true)
 	public void delete(Event entity);	
 	
-	@CacheEvict(value = { "event-findAll", "event-findBySite", "event-findBySiteAndEventTimeBetween", "event-findByStatusChange" }, allEntries = true)
+	@Override
+	@CacheEvict(value = { "event","events" }, allEntries = true)
 	public void deleteAll();
 	
 }

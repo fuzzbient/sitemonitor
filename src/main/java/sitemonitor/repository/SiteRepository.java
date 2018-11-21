@@ -10,21 +10,22 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 @RepositoryRestResource(collectionResourceRel = "sites", path = "sites")
 public interface SiteRepository extends PagingAndSortingRepository<Site, Long> {
 	
-	@Cacheable("site-findOne")
-	public Site findOne(Long id);
+	@Cacheable("site")
+	public Site getById(Long id);
 
-	@Cacheable("site-findAll")
+	@Override
+	@Cacheable("sites")
 	public Iterable<Site> findAll(Sort sort);
 	
-	@Cacheable("site-findOneByName")
-	public Site findOneByName(@Param("name") String name);
+	@Cacheable("site")
+	public Site getOneByName(@Param("name") String name);
 	
 	@Override
-	@CacheEvict(value = { "site-findOne", "site-findAll", "site-findOneByName" }, allEntries = true)
+	@CacheEvict(cacheNames={"site","sites"}, allEntries=true)
 	public <S extends Site> S save(S entity);
 	
 	@Override
-	@CacheEvict(value = { "site-findOne", "site-findAll", "site-findOneByName" }, allEntries = true)
+	@CacheEvict(cacheNames={"site","sites"}, allEntries=true)
 	public void delete(Site entity);	
 	
 }

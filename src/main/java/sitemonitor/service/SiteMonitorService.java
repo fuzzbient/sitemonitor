@@ -20,7 +20,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.context.Context;
-import org.thymeleaf.spring4.SpringTemplateEngine;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import sitemonitor.repository.Event;
 import sitemonitor.repository.EventRepository;
@@ -107,7 +107,7 @@ public class SiteMonitorService {
 		}
 		
 		for (Site site : sites) {
-			Site entity = siteRepository.findOne(site.getId());
+			Site entity = siteRepository.getById(site.getId());
 			if (entity != null) {
 				entity.setResponseTime(site.getResponseTime());
 				entity.setStatus(site.getStatus());
@@ -121,7 +121,7 @@ public class SiteMonitorService {
 		
 		for (Future<Event> task : tasks) {
 			Event event = task.get();
-			Site site = siteRepository.findOne(event.getSite().getId());
+			Site site = siteRepository.getById(event.getSite().getId());
 			if (
 					"YES".equalsIgnoreCase(site.getActive()) &&
 					!"OK".equals(site.getStatus()) && 
