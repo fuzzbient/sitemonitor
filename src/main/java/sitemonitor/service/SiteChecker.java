@@ -11,11 +11,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.client.reactive.ClientHttpConnector;
+import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import reactor.netty.http.client.HttpClient;
+import reactor.netty.tcp.TcpClient;
 import sitemonitor.repository.Event;
 import sitemonitor.repository.Site;
 
@@ -41,10 +48,16 @@ public class SiteChecker {
 			if (logger.isDebugEnabled()) {
 				logger.debug("SiteChecker.handleSiteCheck() site:" + site.getName() + ", " + site.getAssertText());
 			}
+			SslContext sslContext = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
+			TcpClient tcpClient = TcpClient.create().secure( t -> t.sslContext(sslContext) );
+			HttpClient httpClient = HttpClient.from(tcpClient); 
+			ClientHttpConnector httpConnector = new ReactorClientHttpConnector(httpClient);
+			WebClient webClient = WebClient.builder().clientConnector(httpConnector).build();
 			
-			WebClient webClient = WebClient.create(site.getUrl());
+			//WebClient webClient = WebClient.create(site.getUrl());
 			Map<String,Object> responsemap = new HashMap<String,Object>();
 			String response = webClient.get()
+					.uri(site.getUrl())
 					.exchange()
 					.doOnSuccess(r -> responsemap.put("status", r.statusCode()))
 					.block()
