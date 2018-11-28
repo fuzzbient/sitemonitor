@@ -11,19 +11,13 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.client.reactive.ClientHttpConnector;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.SslContextBuilder;
-import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
-import reactor.netty.http.client.HttpClient;
-import reactor.netty.tcp.TcpClient;
 import sitemonitor.repository.Event;
 import sitemonitor.repository.Site;
 
@@ -32,6 +26,9 @@ import sitemonitor.repository.Site;
 public class SiteChecker {
 	public static final int REQUEST_TIMEOUT_SECONDS = 10;
 	private Log logger = LogFactory.getLog(getClass());
+	
+	@Autowired
+	private WebClient webClient;
 	
 	@PostConstruct
 	public void init() {
@@ -49,13 +46,6 @@ public class SiteChecker {
 			if (logger.isDebugEnabled()) {
 				logger.debug("SiteChecker.handleSiteCheck() site:" + site.getName() + ", " + site.getAssertText());
 			}
-			SslContext sslContext = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();
-			TcpClient tcpClient = TcpClient.create().secure( t -> t.sslContext(sslContext) );
-			HttpClient httpClient = HttpClient.from(tcpClient); 
-			ClientHttpConnector httpConnector = new ReactorClientHttpConnector(httpClient);
-			WebClient webClient = WebClient.builder().clientConnector(httpConnector).build();
-			
-			//WebClient webClient = WebClient.create(site.getUrl());
 			Map<String,Object> responsemap = new HashMap<String,Object>();
 			String response = webClient.get()
 					.uri(site.getUrl())
@@ -63,7 +53,7 @@ public class SiteChecker {
 					.doOnSuccess(r -> responsemap.put("status", r.statusCode()))
 					.block()
 					.bodyToMono(String.class)
-					.timeout(Duration.ofSeconds(60))
+					.timeout(Duration.ofSeconds(15))
 					.block();
 			
 			HttpStatus httpStatus = (HttpStatus) responsemap.get("status");
