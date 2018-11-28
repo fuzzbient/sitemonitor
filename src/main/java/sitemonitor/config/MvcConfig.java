@@ -7,7 +7,7 @@ import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
@@ -16,10 +16,10 @@ import reactor.netty.http.client.HttpClient;
 import reactor.netty.tcp.TcpClient;
 
 @Configuration
-public class MvcConfig extends WebMvcConfigurerAdapter {
+public class MvcConfig implements WebMvcConfigurer {
     
-	@Override
-    public void addViewControllers(ViewControllerRegistry registry) {
+    @Override
+	public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/stats").setViewName("index");
         registry.addViewController("/alerttest").setViewName("notification");
     }
@@ -38,10 +38,5 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 		
 		return webClient;
     }	
-	
-//	@Bean
-//	public ConditionalCommentsDialect conditionalCommentDialect() {
-//	    return new ConditionalCommentsDialect();
-//	}	
     
 }
