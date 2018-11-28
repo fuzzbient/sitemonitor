@@ -1,5 +1,6 @@
 package sitemonitor.service;
 
+import java.time.Duration;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -62,6 +63,7 @@ public class SiteChecker {
 					.doOnSuccess(r -> responsemap.put("status", r.statusCode()))
 					.block()
 					.bodyToMono(String.class)
+					.timeout(Duration.ofSeconds(60))
 					.block();
 			
 			HttpStatus httpStatus = (HttpStatus) responsemap.get("status");
