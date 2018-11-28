@@ -59,17 +59,9 @@
       <ul class="nav navbar-nav">
         <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Diags<span class="caret"></span></a>
 	        <ul class="dropdown-menu" role="menu">
-		        <li><a href="#" th:href="@{/}">Services</a></li>
-		        <li><a href="#" th:href="@{/autoconfig}">Autoconfig</a></li>
-		        <li><a href="#" th:href="@{/beans}">Beans</a></li>
-		        <li><a href="#" th:href="@{/configprops}">Config Props</a></li>
-		        <li><a href="#" th:href="@{/dump}">Dump</a></li>
-		        <li><a href="#" th:href="@{/env}">Env</a></li>
-		        <li><a href="#" th:href="@{/health}">Health</a></li>
-		        <li><a href="#" th:href="@{/info}">Info</a></li>
-		        <li><a href="#" th:href="@{/metrics}">Metrics</a></li>
-		        <li><a href="#" th:href="@{/mappings}">Mappings</a></li>
-		        <li><a href="#" th:href="@{/trace}">Trace</a></li>
+		        <li><a href="#" th:href="@{/actuator}" target="_blank">Actuator</a></li>
+		        <li><a href="#" th:href="@{/actuator/health}" target="_blank">Health</a></li>
+		        <li><a href="#" th:href="@{/h2-console}" target="_blank">H2 Console</a></li>
 	        </ul>
         </li>
         <li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Auto-Refresh <span id="refreshsste"></span><span class="caret"></span></a>
