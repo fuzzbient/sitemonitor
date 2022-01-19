@@ -17,12 +17,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.common.collect.Lists;
+
 import sitemonitor.repository.Event;
 import sitemonitor.repository.EventRepository;
 import sitemonitor.repository.Site;
 import sitemonitor.repository.SiteRepository;
-
-import com.google.common.collect.Lists;
 
 @RestController
 @RequestMapping("/service")
@@ -42,7 +42,7 @@ public class MonitorController {
 		if (logger.isDebugEnabled()) {
 			logger.debug("MonitorController.findEvents()");
 		}
-		return eventRepository.findAll(new Sort(Sort.Direction.DESC, "eventTime"));
+		return eventRepository.findAll(Sort.by(Sort.Direction.DESC, "eventTime"));
 	}
 
 	@RequestMapping(value = "/eventchanges", method = RequestMethod.GET)
@@ -50,7 +50,7 @@ public class MonitorController {
 		if (logger.isDebugEnabled()) {
 			logger.debug("MonitorController.findEventChanges()");
 		}
-		return eventRepository.findByStatusChange("Y", new Sort(Sort.Direction.DESC, "eventTime"));
+		return eventRepository.findByStatusChange("Y", Sort.by(Sort.Direction.DESC, "eventTime"));
 	}
 
 	@RequestMapping(value = "/sites", method = RequestMethod.GET)
@@ -58,7 +58,7 @@ public class MonitorController {
 		if (logger.isDebugEnabled()) {
 			logger.debug("MonitorController.findSites()");
 		}
-		return siteRepository.findAll(new Sort(Sort.Direction.ASC, "name"));
+		return siteRepository.findAll(Sort.by(Sort.Direction.ASC, "name"));
 	}
 	
 	@RequestMapping(value = "/eventspurge", method = RequestMethod.DELETE)
@@ -100,7 +100,7 @@ public class MonitorController {
 		labels.put("showMarker", Boolean.FALSE); 
 		
 		DateTime start = new DateTime().minusDays(3);
-		List<Event> events = eventRepository.findBySiteAndEventTimeBetween(site, start.toDate(), new Date(), new Sort(Sort.Direction.ASC, "eventTime"));
+		List<Event> events = eventRepository.findBySiteAndEventTimeBetween(site, start.toDate(), new Date(), Sort.by(Sort.Direction.ASC, "eventTime"));
 		String[][][] data = new String[1][events.size()][2];
 		for (int i = 0; i < events.size(); i++) {
 			Event event = events.get(i);
@@ -127,7 +127,7 @@ public class MonitorController {
 		for (Iterator<Site> iter = sites.iterator(); iter.hasNext();) {
 			Site site = iter.next();
 			DateTime start = new DateTime().minusHours(2);
-			List<Event> events = eventRepository.findBySiteAndEventTimeBetween(site, start.toDate(), new Date(), new Sort(Sort.Direction.ASC, "eventTime"));
+			List<Event> events = eventRepository.findBySiteAndEventTimeBetween(site, start.toDate(), new Date(), Sort.by(Sort.Direction.ASC, "eventTime"));
 			if (events.size() == 0) {
 				iter.remove();
 			} else {
