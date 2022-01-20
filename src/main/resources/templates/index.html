@@ -9,6 +9,7 @@
     <title>Site Monitor | v:[[${@environment.getProperty('sitemonitor.build.date')}]]</title>
 
 <link rel="icon" href="images/favicon.ico?v=2" type="image/x-icon" />
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css"/>
 <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap5.min.css"/>
@@ -178,7 +179,7 @@
     <h5 class="modal-title">Site Add/Edit</h5>
     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
   </div>
-  <form onsubmit="saveSite();return false;" id="siteForm">
+  <form action="" onsubmit="saveSite();return false;" id="siteFormFrm" class="needs-validation" method="post" novalidate>
   <div class="modal-body">  
 	<input type="hidden" id="site-id" name="id" value=""/>
 	<input type="hidden" id="site-status" name="status" value=""/>
@@ -186,36 +187,42 @@
 	<input type="hidden" id="site-lastNotification" name="lastNotification" value=""/>
   	
   	<div class="mb-3">
-  	<label for="name" class="form-label">Name</label>
-  	<input type="text" class="form-control" name="name" id="site-name" value="" placeholder="Name" required="required"/>
+  	<label for="name" class="form-label">Name<span class="text-danger">*</span></label>
+  	<input type="text" class="form-control" name="name" id="site-name" value="" placeholder="Name" required/>
+    <div class="invalid-feedback">Valid entry is required.</div>  	
   	</div>
   	
   	<div class="mb-3">
-  	<label for="url" class="form-label">URL</label>
-  	<input type="url" class="form-control" name="url" id="site-url" placeholder="URL" value="" required="required"/>
+  	<label for="url" class="form-label">URL<span class="text-danger">*</span></label>
+  	<input type="url" class="form-control" name="url" id="site-url" placeholder="URL" value="" required/>
+  	<div class="invalid-feedback">Valid entry is required.</div>
   	</div>
 
   	<div class="mb-3">
-  	<label for="active" class="form-label">Active</label>
-  	<select class="form-control" name="active" id="site-active" required="required">
+  	<label for="active" class="form-label">Active<span class="text-danger">*</span></label>
+  	<select class="form-control" name="active" id="site-active" required>
   		<option value="YES">YES</option>
   		<option value="NO">NO</option>
   	</select>
+  	<div class="invalid-feedback">Valid entry is required.</div>
   	</div>
 
   	<div class="mb-3">
-  	<label for="failureLimit" class="form-label">Failure Limit</label>
-  	<input type="number" class="form-control" name="failureLimit" id="site-failureLimit" value="" placeholder="Failure Limit" required="required"/>
+  	<label for="failureLimit" class="form-label">Failure Limit<span class="text-danger">*</span></label>
+  	<input type="number" class="form-control" name="failureLimit" id="site-failureLimit" value="" placeholder="Failure Limit" required/>
+  	<div class="invalid-feedback">Valid entry is required.</div>
   	</div>
 
   	<div class="mb-3">
-  	<label for="assertText" class="form-label">Assert Text</label>
-  	<input type="text" class="form-control" name="assertText" id="site-assertText" value="" placeholder="Assert Text" required="required"/>
+  	<label for="assertText" class="form-label">Assert Text<span class="text-danger">*</span></label>
+  	<input type="text" class="form-control" name="assertText" id="site-assertText" value="" placeholder="Assert Text" required/>
+  	<div class="invalid-feedback">Valid entry is required.</div>
   	</div>
 
   	<div class="mb-3">
-  	<label for="notify" class="form-label">Notify (comma separated)</label>
-  	<input type="text" class="form-control" name="notify" id="site-notify" value="" placeholder="Notification Emails (comma separated)" required="required"/>
+  	<label for="notify" class="form-label">Notify (comma separated)<span class="text-danger">*</span></label>
+  	<input type="text" class="form-control" name="notify" id="site-notify" value="" placeholder="Notification Emails (comma separated)" required/>
+  	<div class="invalid-feedback">Valid entry is required.</div>
   	</div>
   </div>
   <div class="modal-footer">
@@ -262,9 +269,7 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
-<!--  
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" crossorigin="anonymous"></script>
--->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
 <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
@@ -308,6 +313,26 @@ $(document).ready(function(){
 		$("span[class='status-OK']").css('color','green');
 	}, 1000);
 });
+//JavaScript for disabling form submissions if there are invalid fields
+(function () {
+  'use strict'
+
+  // Fetch all the forms we want to apply custom Bootstrap validation styles to
+  var forms = document.querySelectorAll('.needs-validation')
+
+  // Loop over them and prevent submission
+  Array.prototype.slice.call(forms)
+    .forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+
+        form.classList.add('was-validated')
+      }, false)
+    })
+})()
 function showWorking() {
 	workingModal.show();
 }
@@ -514,6 +539,14 @@ function editSite(id) {
 	siteForm.show();
 }
 function saveSite() {
+	
+	for (const el of document.getElementById('siteFormFrm').querySelectorAll("[required]")) {
+	  if (!el.reportValidity()) {
+	    if (typeof console == "object") { console.log("saveSite() Not all required fields are completed."); }
+	    return;
+	  }
+	}	
+	
 	siteForm.hide();
 	showWorking();
 	
