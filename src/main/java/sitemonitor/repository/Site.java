@@ -61,6 +61,12 @@ public class Site implements Serializable {
 	public String getFailCountDisplay() {
 		return failures + "/" + failureLimit;
 	}
+	
+	public String getFailCountPercent() {
+		//long val = (failures * 100) / (failureLimit * 100);
+		Double percent = (Double.valueOf(failures + ".01").doubleValue()/Double.valueOf(failureLimit + ".00").doubleValue()) * Double.valueOf("100.00");
+		return percent.longValue() + "";
+	}
 
 	public long getId() {
 		return id;

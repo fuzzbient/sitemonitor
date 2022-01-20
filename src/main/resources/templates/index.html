@@ -17,32 +17,34 @@
 
 <meta name="theme-color" content="#7952b3">
 
-    <style>
-      .bd-placeholder-img {
-        font-size: 1.125rem;
-        text-anchor: middle;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        user-select: none;
-      }
+<style>
+.bd-placeholder-img {
+	font-size: 1.125rem;
+	text-anchor: middle;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
+}
 
-      @media (min-width: 768px) {
-        .bd-placeholder-img-lg {
-          font-size: 3.5rem;
-        }
-      }
-	  .sitemonotron { 
-		background-image:url('/sitemonitor/images/sunrise.png?20220119-1');
-		background-size:100% 200%;
-		background-repeat:no-repeat;
-		background-position:0 60%;
-		color:#fff;
-		padding:0 0;
-	  } 
-	  .jqplot-highlighter-tooltip{
-	    font-size:15px;
-	  }     
-    </style>
+@media ( min-width : 768px) {
+	.bd-placeholder-img-lg {
+		font-size: 3.5rem;
+	}
+}
+
+.sitemonotron {
+	background-image: url('/sitemonitor/images/sunrise.png?20220119-1');
+	background-size: 100% 200%;
+	background-repeat: no-repeat;
+	background-position: 0 60%;
+	color: #fff;
+	padding: 0 0;
+}
+
+.jqplot-highlighter-tooltip {
+	font-size: 15px;
+}
+</style>
 
 </head>
 <body class="d-flex flex-column h-100">
@@ -103,7 +105,7 @@
 	  <div class="tab-pane fade show active p-3" id="sites" role="tabpanel" aria-labelledby="sites-tab">
       
       <!-- Sites -->
-		<table id="sitestable" class="table table-condensed" cellspacing="0" width="100%" style="font-size:0.85em;">
+		<table id="sitestable" class="table table-dark table-hover table-sm" cellspacing="0" width="100%" style="font-size:0.85em;">
 		  <thead>
 		    <tr>
 		      <th style="max-width:25px;">&nbsp;</th>
@@ -111,7 +113,7 @@
 		      <th style="max-width:25px;">State</th>
 		      <th style="max-width:40px;">Msec.</th>
 		      <th style="max-width:25px;">Active</th>
-		      <th style="max-width:40px;">Failures</th>
+		      <th style="max-width:80px;">Failures</th>
 		      <th style="max-width:40px;">Assert</th>
 		      <th style="max-width:25px;">Email</th>
 		    </tr>
@@ -119,17 +121,17 @@
 		</table>
 		 
 		<div class="btn-group" role="group">
-		<a href="" onclick="editSite(-1);return false;" class="btn btn-primary" title="New Site" data-toggle="tooltip" data-placement="top"><i class="bi bi-plus-lg"></i></a>
-		<a href="" onclick="purgeEvents();return false;" class="btn btn-danger" title="Purge Events" data-toggle="tooltip" data-placement="top"><i class="bi bi-eraser"></i></a>
-		<a href="" onclick="graphAll();return false;" class="btn btn-info" title="Graph All" data-toggle="tooltip" data-placement="top"><i class="bi bi-graph-up"></i></a>
-		<a href="" t:href="@{/dashboard}" class="btn btn-success" title="Refresh" data-toggle="tooltip" data-placement="top"><i class="bi bi-arrow-clockwise"></i></a>
+		<a href="" onclick="editSite(-1);return false;" class="btn btn-primary btn-sm" title="New Site" data-toggle="tooltip" data-placement="top"><i class="bi bi-plus-lg"></i></a>
+		<a href="" onclick="purgeEvents();return false;" class="btn btn-danger btn-sm" title="Purge Events" data-toggle="tooltip" data-placement="top"><i class="bi bi-eraser"></i></a>
+		<a href="" onclick="graphAll();return false;" class="btn btn-info btn-sm" title="Graph All" data-toggle="tooltip" data-placement="top"><i class="bi bi-graph-up"></i></a>
+		<a href="" t:href="@{/dashboard}" class="btn btn-success btn-sm" title="Refresh" data-toggle="tooltip" data-placement="top"><i class="bi bi-arrow-clockwise"></i></a>
 		</div>			     
       
       </div>
 	  <div class="tab-pane fade p-3" id="events" role="tabpanel" aria-labelledby="events-tab">
 	  
 	  <!-- Events -->
-		<table id="eventstable" class="table table-condensed" cellspacing="0" width="100%" style="font-size:0.85em;">
+		<table id="eventstable" class="table table-dark table-hover table-sm" cellspacing="0" width="100%" style="font-size:0.85em;">
 		  <thead>
 		    <tr>
 		      <th style="min-width:150px;">Site</th>
@@ -696,7 +698,7 @@ function buildSitesTable(json) {
 			{ 
 			  "data": "name",
 			  "render": function ( data, type, row, meta ) {
-				  return '<a href="'+row.url+'" target="_blank" style="color:#444;text-decoration:none;">'+row.name+'</a>';
+				  return '<a href="'+row.url+'" target="_blank" style="color:#fff;text-decoration:none;" title="Click to Open Site" data-toggle="tooltip"><span class="badge bg-primary"><i class="bi bi-box-arrow-up-right"></i></span>&nbsp;&nbsp;'+row.name+'</a>';
 			  }
 			},
 			{ 
@@ -722,7 +724,22 @@ function buildSitesTable(json) {
 				  }
 			  }
 			},
-			{ "data": "failCountDisplay" },
+			{ 
+				"data": "failCountDisplay",
+				"render": function ( data, type, row, meta ) {
+					return  '<div class="row"><div class="col-3">' + row.failCountDisplay + '</div>' +
+					'<div class="col-9">' +
+					'<div class="progress bg-success">' + 
+					'<div class="progress-bar progress-bar-striped progress-bar-animated bg-danger" role="progressbar" style="width: ' + row.failCountPercent + '%" aria-valuenow="' + row.failCountPercent + '" aria-valuemin="0" aria-valuemax="100">' + 
+					'<span class="text-dark">' +
+					row.failCountPercent + '%' +
+					'</span>' +
+					'</div>' + 
+					'</div>' + 
+					'</div>' + 
+					'</div>';
+				}
+			},
 			{ "data": "assertText" },
 			{ 
 			  "data": "notify",
@@ -747,7 +764,7 @@ function buildEventsTable(json) {
 			{ 
 				"data": "siteName",
 				"render": function ( data, type, row, meta ) {
-					return '<a href="'+row.site.url+'" target="_blank" style="color:#444;text-decoration:none;font-weight:bold;">'+row.siteName+'</a>';
+					return '<a href="'+row.site.url+'" target="_blank" style="color:#fff;text-decoration:none;font-weight:bold;" title="Click to Open Site" data-toggle="tooltip"><span class="badge bg-primary"><i class="bi bi-box-arrow-up-right"></i></span>&nbsp;&nbsp;'+row.siteName+'</a>';
 				}
 			},
 			{ 
