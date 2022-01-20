@@ -14,19 +14,22 @@ body {
   padding: 20px;
   /* Set the fixed height of the footer here */
   height: 60px;
-  background-color: #f5f5f5;
-  color:#888;
+  background-color: #222;
+  color:#fff;
+}
+.footer a {
+  color:#fff !important;	
 }
 
 /* Bootstrap Custom Theme */
 .sitemonotron { 
-	background-image:url('/sitemonitor/images/wires.jpg?1');
+	background-image:url('/sitemonitor/images/sunrise.png?20220119-1');
 	background-size:100% 500%;
 	background-repeat:no-repeat;
 	background-position:0 80%;
-	color:#337ab7;
+	color:#fff;
 	padding:0 0;
 }
 .sitemonotron p {
-	color:#337ab7;
+	color:#fff;
 }

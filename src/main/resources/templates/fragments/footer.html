@@ -6,8 +6,12 @@
 
 <!-- Footer -->
 <footer class="footer" th:fragment="footer" th:inline="text">
-	<div id="footer" class="container">
-	&copy; 2022 Paul Horn Enterprises LLC
+	<div id="footer" class="container text-center">
+		<a href="https://www.paulhornenterprises.com" target="_blank">
+			&copy; 2022 Paul Horn Enterprises LLC
+		</a>
+		| 
+	 	<span th:text="'version:' + ${@environment.getProperty('sitemonitor.build.date')}"></span>
 	</div>
 <!--[if lt IE 9]><script src="js/excanvas.min.js" th:src="@{/js/excanvas.min.js}"></script><![endif]-->
 

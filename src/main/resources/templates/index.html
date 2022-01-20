@@ -1,125 +1,225 @@
-<!DOCTYPE html>
-<html lang="en">
-<head th:replace="fragments/header :: head"></head>
-<body>
-<header th:replace="fragments/header :: header"></header>
+<!doctype html>
+<html lang="en" class="h-100">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+    <meta name="generator" content="Hugo 0.84.0">
+    <title>Sticky Footer Navbar Template · Bootstrap v5.0</title>
 
-<div class="jumbotron sitemonotron" style="padding:0 0;">
-  <div class="container">
-    <h1>Site Monitor</h1>
-    <p>HTTP(S) Monitor with Response Performance History Graphing.</p>
-  </div>
-</div>
+<link rel="icon" href="images/favicon.ico?v=2" type="image/x-icon" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css"/>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/dataTables.bootstrap5.min.css"/>
+<link rel="stylesheet" href="/css/jquery.jqplot.css" th:href="@{/css/jquery.jqplot.css}" />
 
-<div class="container-fluid" style="padding:0 0 25px 0;margin:0 10px;">
+<meta name="theme-color" content="#7952b3">
 
-	<!-- Nav tabs -->
-	<ul class="nav nav-tabs" role="tablist">
-	  <li role="presentation" class="active"><a href="#sites" aria-controls="sites" role="tab" data-toggle="tab">Sites</a></li>
-	  <li role="presentation"><a href="#events" aria-controls="events" role="tab" data-toggle="tab">Events</a></li>
+    <style>
+      .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+      }
+
+      @media (min-width: 768px) {
+        .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+      }
+	  .sitemonotron { 
+		background-image:url('/sitemonitor/images/sunrise.png?20220119-1');
+		background-size:100% 200%;
+		background-repeat:no-repeat;
+		background-position:0 60%;
+		color:#fff;
+		padding:0 0;
+	  } 
+	  .jqplot-highlighter-tooltip{
+	    font-size:15px;
+	  }     
+    </style>
+
+</head>
+<body class="d-flex flex-column h-100">
+    
+<header>
+  <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand text-white" th:href="@{/dashboard}" title="SiteMonitor Dashboard Home">
+      	<i class="bi bi-house"></i>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        
+        <ul class="navbar-nav me-auto mb-2 mb-md-0">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle active" aria-current="page" href="#" id="dropdownDiags" data-bs-toggle="dropdown" aria-expanded="false" title="Diagnostics"><i class="bi bi-speedometer2"></i></a>
+	        <ul class="dropdown-menu" aria-labelledby="dropdownDiags">
+		        <li><a class="dropdown-item" th:href="@{/actuator}" target="_blank">Actuator</a></li>
+		        <li><a class="dropdown-item" th:href="@{/actuator/health}" target="_blank">Health</a></li>
+		        <li><a class="dropdown-item" th:href="@{/h2-console}" target="_blank">H2 Console</a></li>
+		    </ul>            
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle active" href="#" id="dropdownAutoRefresh" data-bs-toggle="dropdown" aria-expanded="false" title="Auto-Refresh"><i class="bi bi-arrow-clockwise"></i> <span id="refreshsste"></span></a>
+	        <ul class="dropdown-menu" aria-labelledby="dropdownAutoRefresh">
+		        <li><a class="dropdown-item" href="#" onclick="setAutoRefresh('ON');return false;">Auto-Refresh ON</a></li>
+		        <li><a class="dropdown-item" href="#" onclick="setAutoRefresh('OFF');return false;">Auto-Refresh OFF</a></li>
+		    </ul>            
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<main class="flex-shrink-0">
+  <div class="container-fluid pt-5 px-2">
+  
+    <div class="px-3 my-3 bg-light rounded-3 sitemonotron">
+      <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold">Site Monitor</h1>
+        <p class="col-md-8 fs-4">Web Monitor with Responsive Performance History Graphing</p>
+      </div>
+    </div>    
+    
+	<div class="border rounded-3 p-2">
+	<ul class="nav nav-tabs" id="myTab" role="tablist">
+	  <li class="nav-item" role="presentation">
+	    <button class="nav-link active" id="sites-tab" data-bs-toggle="tab" data-bs-target="#sites" type="button" role="tab" aria-controls="sites" aria-selected="true">Sites</button>
+	  </li>
+	  <li class="nav-item" role="presentation">
+	    <button class="nav-link" id="events-tab" data-bs-toggle="tab" data-bs-target="#events" type="button" role="tab" aria-controls="events" aria-selected="false">Events</button>
+	  </li>
 	</ul>
-
-	<!-- Tab panes -->
-	<div class="tab-content">
-		<div role="tabpanel" class="tab-pane active" id="sites">
-			<div class="ui-corner-all" style="padding:10px;margin:10px;border:solid 1px #eee;background-color:#fff;">
-			
-			<h5>SITES</h5>
-			<table id="sitestable" class="table table-condensed" cellspacing="0" width="100%"
-			       style="font-size:0.85em;">
-			  <thead>
-			    <tr>
-			      <th>&nbsp;</th>
-			      <th style="min-width:150px;">Site</th>
-			      <th>State</th>
-			      <th>Msec.</th>
-			      <th>Active</th>
-			      <th>Failures</th>
-			      <th>Assert</th>
-			      <th>Email</th>
-			    </tr>
-			  </thead>
-			</table>
-			
-			<div class="btn-group" role="group">
-			<a href="" onclick="editSite(-1);return false;" class="btn btn-primary" title="New Site" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-plus"></span></a>
-			<a href="" onclick="purgeEvents();return false;" class="btn btn-danger" title="Purge Events" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-trash"></span></a>
-			<a href="" onclick="graphAll();return false;" class="btn btn-info" title="Graph All" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-signal"></span></a>
-			<a href="" t:href="@{/stats}" class="btn btn-success" title="Refresh" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-refresh"></span></a>
-			</div>
-			</div>
-		</div>
-
-		<div role="tabpanel" class="tab-pane" id="events">
-			<div class="ui-corner-all" style="padding:10px;margin:10px;border:solid 1px #eee;background-color:#fff;">
-			<h5>EVENTS</h5>
-			<table id="eventstable" class="table table-condensed" cellspacing="0" width="100%"
-			       style="font-size:0.85em;">
-			  <thead>
-			    <tr>
-			      <th style="min-width:150px;">Site</th>
-			      <th>Date/Time</th>
-			      <th>State</th>
-			      <th>Msec.</th>
-			    </tr>
-			  </thead>
-			</table>
-			</div>
-		</div>
-	
+	<div class="tab-content" id="myTabContent">
+	  <div class="tab-pane fade show active p-3" id="sites" role="tabpanel" aria-labelledby="sites-tab">
+      
+      <!-- Sites -->
+		<table id="sitestable" class="table table-condensed" cellspacing="0" width="100%" style="font-size:0.85em;">
+		  <thead>
+		    <tr>
+		      <th>&nbsp;</th>
+		      <th style="min-width:150px;">Site</th>
+		      <th>State</th>
+		      <th>Msec.</th>
+		      <th>Active</th>
+		      <th>Failures</th>
+		      <th>Assert</th>
+		      <th>Email</th>
+		    </tr>
+		  </thead>
+		</table>
+		 
+		<div class="btn-group" role="group">
+		<a href="" onclick="editSite(-1);return false;" class="btn btn-primary" title="New Site" data-toggle="tooltip" data-placement="top"><i class="bi bi-plus-lg"></i></a>
+		<a href="" onclick="purgeEvents();return false;" class="btn btn-danger" title="Purge Events" data-toggle="tooltip" data-placement="top"><i class="bi bi-eraser"></i></a>
+		<a href="" onclick="graphAll();return false;" class="btn btn-info" title="Graph All" data-toggle="tooltip" data-placement="top"><i class="bi bi-graph-up"></i></a>
+		<a href="" t:href="@{/dashboard}" class="btn btn-success" title="Refresh" data-toggle="tooltip" data-placement="top"><i class="bi bi-arrow-clockwise"></i></a>
+		</div>			     
+      
+      </div>
+	  <div class="tab-pane fade p-3" id="events" role="tabpanel" aria-labelledby="events-tab">
+	  
+	  <!-- Events -->
+		<table id="eventstable" class="table table-condensed" cellspacing="0" width="100%" style="font-size:0.85em;">
+		  <thead>
+		    <tr>
+		      <th style="min-width:150px;">Site</th>
+		      <th>Date/Time</th>
+		      <th>State</th>
+		      <th>Msec.</th>
+		    </tr>
+		  </thead>
+		</table>
+	  
+	  </div>
+	</div>
 	</div>
 
+  </div>
+</main>
+
+<footer class="footer mt-auto py-3 bg-light">
+  <div class="container text-center">
+    <span class="text-muted">
+		<a href="https://www.paulhornenterprises.com" target="_blank" class="text-muted text-decoration-none">
+			&copy; 2022 Paul Horn Enterprises LLC
+		</a>
+		| 
+	 	<span th:text="'version:' + ${@environment.getProperty('sitemonitor.build.date')}"></span>    
+    </span>
+  </div>
+</footer>
+
+<div class="modal fade" id="workingdialog" aria-hidden="true" aria-labelledby="workingdialog" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content">
+  <div class="modal-body">
+    <div style="padding:50px;text-align:center;">
+    <h4 class="modal-title">Working, please wait...</h4>
+    <img th:src="@{/images/ajax-loader.gif}" alt="loading..." />
+    </div>
+  </div>
+</div>
+</div>
 </div>
 
-<div id="siteForm" class="modal fade">
+<div id="siteForm" class="modal fade" aria-hidden="true" aria-labelledby="siteForm" tabindex="-1">
 <div class="modal-dialog">
 <div class="modal-content">
   <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-    <h4 class="modal-title">Site Add/Edit</h4>
+    <h5 class="modal-title">Site Add/Edit</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
   </div>
-  <form onsubmit="saveSite();return false;" id="siteForm" data-toggle="validator">
+  <form onsubmit="saveSite();return false;" id="siteForm">
   <div class="modal-body">  
 	<input type="hidden" id="site-id" name="id" value=""/>
 	<input type="hidden" id="site-status" name="status" value=""/>
 	<input type="hidden" id="site-failures" name="failures" value=""/>
 	<input type="hidden" id="site-lastNotification" name="lastNotification" value=""/>
   	
-  	<div class="form-group">
-  	<label for="name">Name</label>
+  	<div class="mb-3">
+  	<label for="name" class="form-label">Name</label>
   	<input type="text" class="form-control" name="name" id="site-name" value="" placeholder="Name" required="required"/>
   	</div>
   	
-  	<div class="form-group">
-  	<label for="url">URL</label>
+  	<div class="mb-3">
+  	<label for="url" class="form-label">URL</label>
   	<input type="url" class="form-control" name="url" id="site-url" placeholder="URL" value="" required="required"/>
   	</div>
 
-  	<div class="form-group">
-  	<label for="active">Active</label>
+  	<div class="mb-3">
+  	<label for="active" class="form-label">Active</label>
   	<select class="form-control" name="active" id="site-active" required="required">
   		<option value="YES">YES</option>
   		<option value="NO">NO</option>
   	</select>
   	</div>
 
-  	<div class="form-group">
-  	<label for="failureLimit">Failure Limit</label>
+  	<div class="mb-3">
+  	<label for="failureLimit" class="form-label">Failure Limit</label>
   	<input type="number" class="form-control" name="failureLimit" id="site-failureLimit" value="" placeholder="Failure Limit" required="required"/>
   	</div>
 
-  	<div class="form-group">
-  	<label for="assertText">Assert Text</label>
+  	<div class="mb-3">
+  	<label for="assertText" class="form-label">Assert Text</label>
   	<input type="text" class="form-control" name="assertText" id="site-assertText" value="" placeholder="Assert Text" required="required"/>
   	</div>
 
-  	<div class="form-group">
-  	<label for="notify">Notify (comma separated)</label>
+  	<div class="mb-3">
+  	<label for="notify" class="form-label">Notify (comma separated)</label>
   	<input type="text" class="form-control" name="notify" id="site-notify" value="" placeholder="Notification Emails (comma separated)" required="required"/>
   	</div>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
     <button type="submit" class="btn btn-primary">Submit</button>
   </div>
   </form>
@@ -127,56 +227,128 @@
 </div>
 </div>
 
-<div id="confirmdeletesitedialog" class="modal fade">
+<div id="confirmdeletesitedialog" class="modal fade" aria-hidden="true" aria-labelledby="confirmdeletesitedialog" tabindex="-1">
 <div class="modal-dialog">
 <div class="modal-content" style="width:200px;">
   <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-    <h4 class="modal-title">Are you sure?</h4>
-  </div>
+    <h5 class="modal-title">Are you sure?</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  </div>  
   <div class="modal-footer">
-    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
     <button type="submit" class="btn btn-primary" onclick="javascript:handleDeleteSite();">Yes</button>
   </div>
 </div>
 </div>
 </div>
 
-<div id="graphdialog" class="modal fade">
-<div class="modal-dialog modal-lg">
+<div class="modal fade" id="graphdialog" aria-hidden="true" aria-labelledby="graphdialog" tabindex="-1">
+<div class="modal-dialog modal-xl modal-dialog-centered">
 <div class="modal-content">
   <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-    <h4 class="modal-title">Response Graph</h4>
+    <h5 class="modal-title">Response Graph</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
   </div>
   <div class="modal-body">
-    <div id="chartdiv" style="height:95%;width:100%; "></div>
+    <div class="row">
+    	<div class="col mx-3 text-center" id="chartdiv" style="min-height:400px;">&nbsp;</div>
+    </div>
   </div>
   <div class="modal-footer">
-    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
   </div>
 </div>
 </div>
 </div>
 
-<div th:replace="fragments/footer :: footer"></div>
-<div th:replace="fragments/footer :: workingdialog"></div>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js" crossorigin="anonymous"></script>
+<!--  
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" crossorigin="anonymous"></script>
+-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
-<script type="text/javascript" th:inline="text">
+<script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap5.min.js"></script>
+
+<script src="js/jquery.columns.min.js" th:src="@{/js/jquery.columns.min.js}"></script>
+<script src="js/jquery.jqplot.min.js" th:src="@{/js/jquery.jqplot.min.js}"></script>
+<script src="js/jqplot.json2.min.js" th:src="@{/js/jqplot.json2.min.js}"></script>
+<script src="js/jqplot.canvasAxisLabelRenderer.min.js" th:src="@{/js/jqplot.canvasAxisLabelRenderer.min.js}"></script>
+<script src="js/jqplot.canvasAxisTickRenderer.min.js" th:src="@{/js/jqplot.canvasAxisTickRenderer.min.js}"></script>
+<script src="js/jqplot.canvasTextRenderer.min.js" th:src="@{/js/jqplot.canvasTextRenderer.min.js}"></script>
+<script src="js/jqplot.cursor.min.js" th:src="@{/js/jqplot.cursor.min.js}"></script>
+<script src="js/jqplot.dateAxisRenderer.min.js" th:src="@{/js/jqplot.dateAxisRenderer.min.js}"></script>
+<script src="js/jqplot.highlighter.min.js" th:src="@{/js/jqplot.highlighter.min.js}"></script>
+
+<script type="text/javascript">
 /*<![CDATA[*/
+var autorefresh = 'OFF';
+var secondsexpired = 60;
+var workingModal = new bootstrap.Modal(document.getElementById('workingdialog'));
+
+var siteForm = new bootstrap.Modal(document.getElementById('siteForm'));
+var confirmdeletesitedialog = new bootstrap.Modal(document.getElementById('confirmdeletesitedialog'));
+var graphdialog = new bootstrap.Modal(document.getElementById('graphdialog'));
+
 $(document).ready(function(){
+	setAutoRefresh();
+	window.setInterval(function() {
+		if (autorefresh == 'ON') {
+			secondsexpired = (secondsexpired - 15);
+			if (typeof console == "object") { console.log("Refresh in " + secondsexpired + " sec."); }
+			if (secondsexpired <= 0) { window.location = '/sitemonitor/dashboard'; }
+		}
+	}, 15 * 1000);
+	
 	$.ajaxSetup({ cache: false });
 	loadEvents();
 	loadSites();
 	setInterval(function () {
 		$("span[class^='status-']").css('color','red');
 		$("span[class='status-OK']").css('color','green');
-	}, 500);
-	$.jqplot.config.enablePlugins = true;
+	}, 1000);
 });
+function showWorking() {
+	workingModal.show();
+}
+function hideWorking() {
+	//if (typeof console == "object") { console.log("hideWorking()"); }
+	//Depends on how fast show completes to allow hide.
+	(function myLoop(i) {
+	  setTimeout(function() {
+	      if ($('#workingdialog').is(':visible')) { workingModal.hide(); }
+		  if (--i) myLoop(i);
+	    }, 100)
+	})(10); 
+}
+function setAutoRefresh(state) {
+	if (!state || state == '') {
+		state = localStorage.getItem('autorefresh');
+		if (!state || state == '') {
+			state = 'ON';
+		}
+	}
+	autorefresh = state;
+	localStorage.setItem('autorefresh',state);
+	if (state == 'ON') {
+		$("#refreshsste").html("(ON)")
+	} else {
+		$("#refreshsste").html("(OFF)")
+	}
+	if (typeof console == "object") { console.log("autorefresh autorefresh:" + autorefresh + ",  localStorage autorefresh:" + localStorage.getItem('autorefresh')); }
+}
+function toggleActive(id) {
+	showWorking()
+	$.ajax({
+		url: "[[@{/service/toggleactive/}]]" + id,
+		success: function(json){ 
+			window.location = '[[@{/dashboard}]]'; 
+		}
+	});
+}
 function loadSites() {
-	if (typeof console == "object") { console.log("loadEvents()"); }
-	$('#workingdialog').modal('show');
+	if (typeof console == "object") { console.log("loadSites()"); }
+	showWorking();
 	try {
 		$.getJSON( "[[@{/sites(size=100,sort=name,name.dir=asc)}]]" , function( data ) {
 			json = [];
@@ -184,73 +356,79 @@ function loadSites() {
 				json = data._embedded.sites;
 			}
 			buildSitesTable(json);
-			$('#workingdialog').modal('hide');
+			hideWorking();
+		});
+	} catch (err) {
+		if (typeof console == "object") { console.log("loadSites() error: " + err); }
+		hideWorking();
+	}	
+}
+function loadEvents() {
+	if (typeof console == "object") { console.log("loadEvents()"); }
+	try {
+		$.getJSON( "[[@{/service/eventchanges}]]" , function( data ) {
+			json = [];
+			if (data) {
+				json = data;
+			}
+			buildEventsTable(json);
 		});
 	} catch (err) {
 		if (typeof console == "object") { console.log("loadEvents() error: " + err); }
-		$('#workingdialog').modal('hide');
 	}	
 }
 
-function toggleActive(id) {
-	$('#workingdialog').modal('show');
-	$.ajax({
-		url: "[[@{/service/toggleactive/}]]" + id,
-		success: function(json){ 
-			window.location = '[[@{/stats}]]'; 
-		}
-	});
-}
+
+//-----------------------------------------------------------------------------------------------
+
 function graphSite(id) {
 	try {
-		$('#workingdialog').modal('show');
-		$("#chartdiv").html('<div style="padding:100px 450px;"><img src="images/ajax-loader.gif"/></div>');
-		$('#graphdialog').modal();
-		$('#graphdialog').on('shown.bs.modal', function (e) {
+		$('#chartdiv').html('');
+		graphdialog.show();
+		document.getElementById('graphdialog').addEventListener('shown.bs.modal', function graphModalShown(event) {
 			$.ajax({
 				url: "[[@{/service/chartdata/}]]" + id,
 				success: function(json){ 
 					plotGraph(json.data, json.labels); 
-					$('#workingdialog').modal('hide');
-				}
+					if (typeof console == "object") { console.log("graphSite(" + id +") completed plotting graph"); }
+				},
+				error: function() {
+					if (typeof console == "object") { console.log("graphSite(" + id +") Error!"); }
+			    }
 			});
+			document.getElementById('graphdialog').removeEventListener('shown.bs.modal', graphModalShown);
 		});
 	} catch (err) { 
-		$('#workingdialog').modal('hide');
-		if (typeof console == "object") { 
-			console.log(err); 
-		} 
+		if (typeof console == "object") { console.log("graphSite(" + id +") Erro:" + err); } 
 	}
 }
 function graphAll() {
-	$('#workingdialog').modal('show');
 	try {
-		$("#chartdiv").html('<div style="padding:100px 450px;"><img src="images/ajax-loader.gif"/></div>');
-		$('#graphdialog').modal();
-		$('#graphdialog').on('shown.bs.modal', function (e) {
+		$('#chartdiv').html('');
+		graphdialog.show();
+		document.getElementById('graphdialog').addEventListener('shown.bs.modal', function graphModalShown(event) {
 			$.ajax({
 				url: "[[@{/service/chartalldata}]]",
 				success: function(json) { 
-					if (typeof console == "object") { console.log("graphAll() Plotting graph..."); }
 					plotGraph(json.data, json.labels); 
-					$('#workingdialog').modal('hide');
+					if (typeof console == "object") { console.log("graphAll() completed plotting graph"); }
 				},
 				error: function() {
-					$('#workingdialog').modal('hide');
 					if (typeof console == "object") { console.log("graphAll() Error!"); }
 			    }
 			});
+			document.getElementById('graphdialog').removeEventListener('shown.bs.modal', graphModalShown);
 		});
 	} catch (err) { 
-		$('#workingdialog').modal('hide');
-		if (typeof console == "object") { console.log(err); } 
+		if (typeof console == "object") { console.log("graphAll() Erro:" + err); } 
 	}
 }
 // http://www.jqplot.com/docs/files/plugins/jqplot-dateAxisRenderer-js.html
 // http://www.jqplot.com/deploy/dist/examples/
 var graph;
 function plotGraph(data, labels) {
-	$("#chartdiv").html("");
+	if (typeof console == "object") { console.log("plotGraph()"); }
+	//$("#chartdiv").html("");
 	if (graph) { graph.destroy(); }
 	graph = $.jqplot('chartdiv', data, {
 		title:'Response Times',
@@ -301,20 +479,9 @@ function tooltipContentEditor(str, seriesIndex, pointIndex, plot) {
     // display series_label, x-axis_tick, y-axis value
     return plot.series[seriesIndex]["label"] + ", " + plot.data[seriesIndex][pointIndex];
 }
-function loadEvents() {
-	if (typeof console == "object") { console.log("loadEvents()"); }
-	try {
-		$.getJSON( "[[@{/service/eventchanges}]]" , function( data ) {
-			json = [];
-			if (data) {
-				json = data;
-			}
-			buildEventsTable(json);
-		});
-	} catch (err) {
-		if (typeof console == "object") { console.log("loadEvents() error: " + err); }
-	}	
-}
+
+//-----------------------------------------------------------------------------------------------
+
 function editSite(id) {
 	if (id > 0) {
 		$.ajax({
@@ -344,11 +511,11 @@ function editSite(id) {
 		$("#site-failures").val("");
 		$("#site-lastNotification").val("");
 	}
-	$('#siteForm').modal();
+	siteForm.show();
 }
 function saveSite() {
-	$('#siteForm').modal('hide');
-	$('#workingdialog').modal('show');
+	siteForm.hide();
+	showWorking();
 	
 	id = $("#site-id").val();
 	name = $("#site-name").val();
@@ -390,7 +557,7 @@ function saveSite() {
 		data : json,
 		//dataType : 'json', //null response will error out if we require json
 		success: function () {
-			window.location = '[[@{/stats}]]';
+			window.location = '[[@{/dashboard}]]';
 	    },
 	    error: function(XMLHttpRequest, textStatus, errorThrown) { 
 	    	if (typeof console == "object") { 
@@ -398,7 +565,7 @@ function saveSite() {
 	    		console.log("textStatus:" + textStatus); 
 	    		console.log("errorThrown:" + errorThrown); 
 	    	}
-	    	$('#workingdialog').modal('hide');
+	    	hideWorking();
 	        alert("Status: " + textStatus + "\nError: " + errorThrown); 
 	    }
 	});	
@@ -406,13 +573,13 @@ function saveSite() {
 var deleteid;
 function deleteSite(id) {
 	deleteid = id;
-	$("#confirmdeletesitedialog").modal();
+	confirmdeletesitedialog.show();
 }
 function handleDeleteSite() {	
 	id = deleteid;
 	if (id > 0) {
-		$("#confirmdeletesitedialog").modal('hide');
-		$('#workingdialog').modal('show');
+		confirmdeletesitedialog.hide();
+		showWorking();
 		$.ajax({
 			headers: { 
 		        'Accept': 'application/json',
@@ -421,7 +588,7 @@ function handleDeleteSite() {
 			type : "DELETE",
 			url : '[[@{/sites}]]/' + id,
 			success: function () {
-				window.location = '[[@{/stats}]]';
+				window.location = '[[@{/dashboard}]]';
 		    },
 		    error: function(XMLHttpRequest, textStatus, errorThrown) { 
 		    	if (typeof console == "object") { 
@@ -429,14 +596,14 @@ function handleDeleteSite() {
 		    		console.log("textStatus:" + textStatus); 
 		    		console.log("errorThrown:" + errorThrown); 
 		    	}
-		    	$('#workingdialog').modal('hide');
+		    	hideWorking();
 		    	alert("Status: " + textStatus + "\nError: " + errorThrown); 
 		    }
 		});
 	}	
 }
 function purgeEvents() {
-	$('#workingdialog').modal('show');
+	showWorking();
 	$.ajax({
 		headers: { 
 	        'Accept': 'application/json',
@@ -445,7 +612,7 @@ function purgeEvents() {
 		type : "DELETE",
 		url : '[[@{/service/eventspurge}]]',
 		success: function () {
-			window.location = '[[@{/stats}]]';
+			window.location = '[[@{/dashboard}]]';
 	    },
 	    error: function(XMLHttpRequest, textStatus, errorThrown) { 
 	    	if (typeof console == "object") { 
@@ -453,15 +620,16 @@ function purgeEvents() {
 	    		console.log("textStatus:" + textStatus); 
 	    		console.log("errorThrown:" + errorThrown); 
 	    	}
-	    	$('#workingdialog').modal('hide');
+	    	hideWorking();
 	    	alert("Status: " + textStatus + "\nError: " + errorThrown); 
 	    }
 	});	
 }
+
 /*]]>*/
 </script>
 <script type="text/javascript" th:inline="none">
-/*<![CDATA[*/	
+/*<![CDATA[*/
 function buildSitesTable(json) {
 	$('#sitestable').DataTable({
 		"pageLength": 50,
@@ -486,9 +654,9 @@ function buildSitesTable(json) {
 			   "data": "identity",
 			   "render": function ( data, type, row, meta ) {
 				   return '<div class="btn-group" role="group" style="width:110px;">'+
-					'<a href="" onclick="editSite('+data+');return false;" class="btn btn-sm btn-primary" title="Edit" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-pencil"></span></a>'+ 
-					'<a href="" onclick="graphSite('+data+');return false;" class="btn btn-sm btn-info" title="Graph" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-signal"></span></a>'+ 
-					'<a href="" onclick="deleteSite('+data+');return false;" class="btn btn-sm btn-danger" title="Delete" data-toggle="tooltip" data-placement="top"><span class="glyphicon glyphicon-trash"></span></a>'+
+					'<a href="#" onclick="editSite('+data+');return false;" class="btn btn-sm btn-primary" title="Edit" data-toggle="tooltip" data-placement="top"><i class="bi bi-pencil-square"></i></a>'+ 
+					'<a href="#" onclick="graphSite('+data+');return false;" class="btn btn-sm btn-info" title="Graph" data-toggle="tooltip" data-placement="top"><i class="bi bi-graph-up"></i></a>'+ 
+					'<a href="#" onclick="deleteSite('+data+');return false;" class="btn btn-sm btn-danger" title="Delete" data-toggle="tooltip" data-placement="top"><i class="bi bi-trash"></i></a>'+
 					'</div>';
 			   }
 			},
@@ -515,9 +683,9 @@ function buildSitesTable(json) {
 			  "data": "active",
 			  "render": function ( data, type, row, meta) {
 				  if (row.active == 'YES') {
-					  return '<button type="button" onclick="toggleActive('+row.identity+');return false;" class="btn btn-sm btn-default active-'+row.active+'" title="Active" data-toggle="tooltip" data-placement="right"><span class="glyphicon glyphicon-play"></span></button>';
+					  return '<button type="button" onclick="toggleActive('+row.identity+');return false;" class="btn btn-sm btn-success" title="Click to Stop" data-toggle="tooltip" data-placement="right"><i class="bi bi-play-fill"></i></button>';
 				  } else {
-					  return '<button type="button" onclick="toggleActive('+row.identity+');return false;" class="btn btn-sm btn-default active-'+row.active+'" title="Inactive" data-toggle="tooltip" data-placement="right"><span class="glyphicon glyphicon-stop"></span></button>';
+					  return '<button type="button" onclick="toggleActive('+row.identity+');return false;" class="btn btn-sm btn-light border" title="Click to Start" data-toggle="tooltip" data-placement="right"><i class="bi bi-stop-fill"></i></button>';
 				  }
 			  }
 			},
@@ -526,7 +694,7 @@ function buildSitesTable(json) {
 			{ 
 			  "data": "notify",
 			  "render": function ( data, type, row, meta ) {
-				  return '<button type="button" class="btn btn-sm btn-success" data-toggle="popover" title="Email Addresses" data-placement="bottom" data-content="'+row.notifyDisplay+'" title="View Email Addresses"><span class="glyphicon glyphicon-envelope"></span></button>';
+				  return '<button type="button" class="btn btn-sm btn-info" data-toggle="popover" data-bs-trigger="focus" title="Email Addresses" data-bs-content="'+row.notifyDisplay+'"><i class="bi bi-envelope"></i></button>';
 			  }
 			}
 		],
@@ -535,7 +703,7 @@ function buildSitesTable(json) {
 			$('[data-toggle="tooltip"]').tooltip();
 	    }
 	});	
-}           
+} 
 function buildEventsTable(json) {
 	var table = $('#eventstable').DataTable({
 		"pageLength": 50,
@@ -567,5 +735,6 @@ function buildEventsTable(json) {
 }
 /*]]>*/
 </script>
+      
 </body>
 </html>
