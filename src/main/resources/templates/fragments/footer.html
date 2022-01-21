@@ -107,7 +107,7 @@
 </div>
 
 <div class="modal fade" id="graphdialog" aria-hidden="true" aria-labelledby="graphdialog" tabindex="-1" th:fragment="graphdialog">
-<div class="modal-dialog modal-xl modal-dialog-centered">
+<div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
 <div class="modal-content">
   <div class="modal-header">
     <h5 class="modal-title">Response Graph</h5>
@@ -267,6 +267,7 @@ function loadEvents() {
 
 function graphSite(id) {
 	try {
+		showWorking();
 		$('#chartdiv').html('');
 		graphdialog.show();
 		document.getElementById('graphdialog').addEventListener('shown.bs.modal', function graphModalShown(event) {
@@ -275,9 +276,11 @@ function graphSite(id) {
 				success: function(json){ 
 					plotGraph(json.data, json.labels); 
 					if (typeof console == "object") { console.log("graphSite(" + id +") completed plotting graph"); }
+					hideWorking();
 				},
 				error: function() {
 					if (typeof console == "object") { console.log("graphSite(" + id +") Error!"); }
+					hideWorking();
 			    }
 			});
 			document.getElementById('graphdialog').removeEventListener('shown.bs.modal', graphModalShown);
@@ -288,6 +291,7 @@ function graphSite(id) {
 }
 function graphAll() {
 	try {
+		showWorking();
 		$('#chartdiv').html('');
 		graphdialog.show();
 		document.getElementById('graphdialog').addEventListener('shown.bs.modal', function graphModalShown(event) {
@@ -296,9 +300,11 @@ function graphAll() {
 				success: function(json) { 
 					plotGraph(json.data, json.labels); 
 					if (typeof console == "object") { console.log("graphAll() completed plotting graph"); }
+					hideWorking();
 				},
 				error: function() {
 					if (typeof console == "object") { console.log("graphAll() Error!"); }
+					hideWorking();
 			    }
 			});
 			document.getElementById('graphdialog').removeEventListener('shown.bs.modal', graphModalShown);
