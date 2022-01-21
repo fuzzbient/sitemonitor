@@ -48,8 +48,7 @@ nohup java -Xmx1024m -Dspring.mail.host=localhost -Dsitemonitor.mail.from=sitemo
 ```
 ## Try these URLs and REST service endpoints to explore the features.
 
-* **Dashboard** http://localhost:8011/sitemonitor/stats
-* **HATEOAS Service Listing** http://localhost:8011/sitemonitor/
+* **Dashboard** http://localhost:8011/sitemonitor/dashboard
 * **Event Listing** http://localhost:8011/sitemonitor/service/events
 * **Event Changes** http://localhost:8011/sitemonitor/service/eventchanges
 * **Site Listing** http://localhost:8011/sitemonitor/service/sites
