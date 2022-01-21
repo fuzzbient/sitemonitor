@@ -267,9 +267,9 @@ function loadEvents() {
 
 function graphSite(id) {
 	try {
-		showWorking();
 		$('#chartdiv').html('');
 		graphdialog.show();
+		showWorking();
 		document.getElementById('graphdialog').addEventListener('shown.bs.modal', function graphModalShown(event) {
 			$.ajax({
 				url: "[[@{/service/chartdata/}]]" + id,
@@ -291,9 +291,9 @@ function graphSite(id) {
 }
 function graphAll() {
 	try {
-		showWorking();
 		$('#chartdiv').html('');
 		graphdialog.show();
+		showWorking();
 		document.getElementById('graphdialog').addEventListener('shown.bs.modal', function graphModalShown(event) {
 			$.ajax({
 				url: "[[@{/service/chartalldata}]]",
