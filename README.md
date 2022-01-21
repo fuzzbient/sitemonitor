@@ -56,7 +56,7 @@ nohup java -Xmx1024m -Dspring.mail.host=localhost -Dsitemonitor.mail.from=sitemo
 
 ## Copyright and license
 
-SiteMonitor is copyright 2015 Paul Horn Enterprises LLC except where noted in included libraries.
+SiteMonitor is copyright 2022 Paul Horn Enterprises LLC except where noted in included libraries.
 
 Licensed under the **[Apache License, Version 2.0] [license]** (the "License");
 you may not use this software except in compliance with the License.
