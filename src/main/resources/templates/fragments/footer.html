@@ -11,7 +11,9 @@
 			&copy; 2022 Paul Horn Enterprises LLC
 		</a>
 		| 
-	 	<span th:text="'version:' + ${@environment.getProperty('sitemonitor.build.date')}"></span>    
+	 	<a href="https://github.com/fuzzbient/sitemonitor" title="About SiteMonitor" target="_blank" class="text-muted text-decoration-none">
+	 		<span th:text="'version:' + ${@environment.getProperty('sitemonitor.build.date')}"></span> 
+	 	</a>   
     </span>
   </div>
 </footer>
