@@ -1,35 +1,26 @@
-html { position: relative;min-height: 100%; }
-body {
-  padding-top: 50px;
-  padding-bottom: 0px;
-  height:100%;
-  margin-bottom: 60px;
-}
-.active-YES { color:green; }
-.active-NO { color:red; }
-.footer {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  padding: 20px;
-  /* Set the fixed height of the footer here */
-  height: 60px;
-  background-color: #222;
-  color:#fff;
-}
-.footer a {
-  color:#fff !important;	
+.bd-placeholder-img {
+	font-size: 1.125rem;
+	text-anchor: middle;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	user-select: none;
 }
 
-/* Bootstrap Custom Theme */
-.sitemonotron { 
-	background-image:url('/sitemonitor/images/sunrise.png?20220119-1');
-	background-size:100% 500%;
-	background-repeat:no-repeat;
-	background-position:0 80%;
-	color:#fff;
-	padding:0 0;
+@media ( min-width : 768px) {
+	.bd-placeholder-img-lg {
+		font-size: 3.5rem;
+	}
 }
-.sitemonotron p {
-	color:#fff;
+
+.sitemonotron {
+	background-image: url('/sitemonitor/images/sunrise.png?20220119-1');
+	background-size: 100% 200%;
+	background-repeat: no-repeat;
+	background-position: 0 60%;
+	color: #fff;
+	padding: 0 0;
+}
+
+.jqplot-highlighter-tooltip {
+	font-size: 15px;
 }
