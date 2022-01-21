@@ -267,20 +267,18 @@ function loadEvents() {
 
 function graphSite(id) {
 	try {
-		$('#chartdiv').html('');
+		$('#chartdiv').html('<img src="[[@{/images/ajax-loader.gif}]]" class="pt-5 mt-5" alt="loading..." />');
 		graphdialog.show();
-		showWorking();
 		document.getElementById('graphdialog').addEventListener('shown.bs.modal', function graphModalShown(event) {
 			$.ajax({
 				url: "[[@{/service/chartdata/}]]" + id,
 				success: function(json){ 
+					$('#chartdiv').html('');
 					plotGraph(json.data, json.labels); 
 					if (typeof console == "object") { console.log("graphSite(" + id +") completed plotting graph"); }
-					hideWorking();
 				},
 				error: function() {
 					if (typeof console == "object") { console.log("graphSite(" + id +") Error!"); }
-					hideWorking();
 			    }
 			});
 			document.getElementById('graphdialog').removeEventListener('shown.bs.modal', graphModalShown);
@@ -291,20 +289,18 @@ function graphSite(id) {
 }
 function graphAll() {
 	try {
-		$('#chartdiv').html('');
+		$('#chartdiv').html('<img src="[[@{/images/ajax-loader.gif}]]" class="pt-5 mt-5" alt="loading..." />');
 		graphdialog.show();
-		showWorking();
 		document.getElementById('graphdialog').addEventListener('shown.bs.modal', function graphModalShown(event) {
 			$.ajax({
 				url: "[[@{/service/chartalldata}]]",
 				success: function(json) { 
+					$('#chartdiv').html('');
 					plotGraph(json.data, json.labels); 
 					if (typeof console == "object") { console.log("graphAll() completed plotting graph"); }
-					hideWorking();
 				},
 				error: function() {
 					if (typeof console == "object") { console.log("graphAll() Error!"); }
-					hideWorking();
 			    }
 			});
 			document.getElementById('graphdialog').removeEventListener('shown.bs.modal', graphModalShown);
